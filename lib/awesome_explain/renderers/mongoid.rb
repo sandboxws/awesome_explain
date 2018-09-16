@@ -4,17 +4,10 @@ module AwesomeExplain
       attr_reader :result, :query
 
       COLOR_ESCAPES = {
-        none: 0,
-        bright: 1,
-        black: 30,
-        red: 31,
-        green: 32,
-        yellow: 33,
-        blue: 34,
-        magenta: 35,
-        cyan: 36,
-        white: 37,
-        default: 39
+        none: 0, bright: 1, black: 30,
+        red: 31, green: 32, yellow: 33,
+        blue: 34, magenta: 35, cyan: 36,
+        white: 37, default: 39
       }
 
       def initialize(query)
@@ -36,8 +29,6 @@ module AwesomeExplain
       def bg_color(clr, text = nil)
         "\x1B[" + ((COLOR_ESCAPES[clr] || 0) + 10).to_s + 'm' + (text ?  text + "\x1B[0m" : '')
       end
-
-      private
 
       def print_general_info
         ap result, indent: -2
@@ -120,12 +111,12 @@ module AwesomeExplain
 
         if stage.dig('inputStages').present?
           str += ' -> ' + stage_label_and_stats(stage) + ' ->'
-          str += " [ "
+          str += ' [ '
           stage.dig('inputStages').each_with_index do |s, idx|
             str = dig_input_stages(s, str, used_indexes, true)
             str += ' , ' if idx < stage.dig('inputStages').size - 1
           end
-          str += " ] "
+          str += ' ] '
         end
 
         str
@@ -135,7 +126,7 @@ module AwesomeExplain
         str = "#{stage.dig('stage')} ("
         str += "#{stage.dig('docsExamined')} / " if stage.dig('docsExamined').present?
         str += stage.dig('nReturned').to_s if stage.dig('nReturned').present?
-        str += ")"
+        str += ')'
 
         str.gsub(' ()', '')
       end

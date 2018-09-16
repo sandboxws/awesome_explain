@@ -1,9 +1,14 @@
+addons:
+  code_climate:
+    repo_token:
+      secure: "iLix2/7jYzbxfOe4hGvikPIfDL/xhIz5h0z6h0aZg1UMagnAue5UStYcvk5u1UtyTBW/aAW8WIgGVZG09a4J2Ker6+PaLskt94FytqTwQzAN6jONAdIlpreCdfFM5KbFVA7v9VszfkEcuYmAde4n1GbN4Hle84WeHAGI9dPd9sgvrbmIwAxcYSlYrDhqnMCzi0Z4Fqpbw0pLP6ZYWgoV1DywlFvCKjOcWaY1M0QoPZnJT/AGA9BGiJk42KfXCwY3b80VnixGFXtIgRqfFU1b0ZGptdtjETnDNeG2CA63sQoyAxOAStKxpTRKXRG/sI8fxuDdLDeqMOdrSpc19zqbr4hvUCn2+ukJMe3r4iKt5m4VjffcJVEXI8h7e16bbsBFvsgLQcxjBWcH5p9vOAl8aEHttUnaGvjtwza5MGTg2yI1CnIG+zMgb/MaR04zhI6YbKiZ88E5QXlyKBfA7DaT8ojRlpIIBFWhF7WpXBgCIxMB6afG8DaUTCCyFsa3xmvU+DR31xbgvKIYsv7etcCOqqmpbx+sQDIXUK6t4iF+d+ZWzj+CL1DtSw0I4Qkfmvj4nl4Zy3MRNZdr8vJbJf39bf2JTGqjd1qfCW/q1XV+2Bqtjp4wIOP/LWGlmcQYVnZ2q+13mP7wKyE6JVzX8khqkiggvtK255C8ETXc1BVBx6E="
 sudo: false
 language: ruby
 cache: bundler
 rvm:
   - 2.3.4
 before_install: gem install bundler -v 1.16.0
+notifications: false
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
@@ -11,4 +16,4 @@ before_script:
 script:
   - bundle exec rspec
 after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter after-build -t simplecov -p /home/travis/build/sandboxws/awesome_explain
