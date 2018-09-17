@@ -72,3 +72,7 @@ Below is a breakdown of the above winning plan:
 
 For information about MongoDB's explain output, please refer to the official MongoDB Explain documentation:
 https://docs.mongodb.com/manual/reference/explain-results/
+
+## TODO
+- [ ] Add Specs
+- [ ] Add more examples
