@@ -2,8 +2,8 @@ PATH
   remote: .
   specs:
     awesome_explain (0.1.0)
-      awesome_print
-      terminal-table
+      awesome_print (~> 1.8)
+      terminal-table (~> 1.8)
 
 GEM
   remote: https://rubygems.org/
@@ -67,11 +67,11 @@ PLATFORMS
 DEPENDENCIES
   awesome_explain!
   bundler (~> 1.16)
-  mongoid
+  mongoid (>= 5)
   rake (~> 10.0)
   rspec (~> 3.0)
-  simplecov
-  simplecov-console
+  simplecov (~> 0.16.1)
+  simplecov-console (~> 0.4.2)
 
 BUNDLED WITH
    1.16.3
