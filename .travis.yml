@@ -1,12 +1,13 @@
-addons:
-  code_climate:
-    repo_token:
-      secure: "iLix2/7jYzbxfOe4hGvikPIfDL/xhIz5h0z6h0aZg1UMagnAue5UStYcvk5u1UtyTBW/aAW8WIgGVZG09a4J2Ker6+PaLskt94FytqTwQzAN6jONAdIlpreCdfFM5KbFVA7v9VszfkEcuYmAde4n1GbN4Hle84WeHAGI9dPd9sgvrbmIwAxcYSlYrDhqnMCzi0Z4Fqpbw0pLP6ZYWgoV1DywlFvCKjOcWaY1M0QoPZnJT/AGA9BGiJk42KfXCwY3b80VnixGFXtIgRqfFU1b0ZGptdtjETnDNeG2CA63sQoyAxOAStKxpTRKXRG/sI8fxuDdLDeqMOdrSpc19zqbr4hvUCn2+ukJMe3r4iKt5m4VjffcJVEXI8h7e16bbsBFvsgLQcxjBWcH5p9vOAl8aEHttUnaGvjtwza5MGTg2yI1CnIG+zMgb/MaR04zhI6YbKiZ88E5QXlyKBfA7DaT8ojRlpIIBFWhF7WpXBgCIxMB6afG8DaUTCCyFsa3xmvU+DR31xbgvKIYsv7etcCOqqmpbx+sQDIXUK6t4iF+d+ZWzj+CL1DtSw0I4Qkfmvj4nl4Zy3MRNZdr8vJbJf39bf2JTGqjd1qfCW/q1XV+2Bqtjp4wIOP/LWGlmcQYVnZ2q+13mP7wKyE6JVzX8khqkiggvtK255C8ETXc1BVBx6E="
+env:
+  global:
+    - CC_TEST_REPORTER_ID=64e9e8dd83a58ef2e8d61da6a54ea4d941702e9c37ee1fdf54f6d97df87563b3
 sudo: false
 language: ruby
 cache: bundler
 rvm:
   - 2.3.4
+  - 2.4.3
+  - 2.5.1
 env:
   global:
     - CI="travis"
