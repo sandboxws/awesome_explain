@@ -1,6 +1,3 @@
-env:
-  global:
-    - CC_TEST_REPORTER_ID=64e9e8dd83a58ef2e8d61da6a54ea4d941702e9c37ee1fdf54f6d97df87563b3
 sudo: false
 language: ruby
 cache: bundler
@@ -11,7 +8,7 @@ rvm:
 env:
   global:
     - CI="travis"
-    - JRUBY_OPTS="--server -J-Xms512m -J-Xmx1024m"
+    - CC_TEST_REPORTER_ID=64e9e8dd83a58ef2e8d61da6a54ea4d941702e9c37ee1fdf54f6d97df87563b3
   matrix:
     - MONGODB=3.4
     - MONGODB=3.6
