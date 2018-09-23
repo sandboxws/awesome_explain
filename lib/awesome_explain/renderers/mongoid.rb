@@ -12,11 +12,10 @@ module AwesomeExplain
 
       def initialize(query)
         @query = query
+        @result = query.explain
       end
 
       def print
-        @result = query.explain
-
         print_general_info
       end
 

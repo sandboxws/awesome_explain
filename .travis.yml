@@ -7,13 +7,31 @@ language: ruby
 cache: bundler
 rvm:
   - 2.3.4
-before_install: gem install bundler -v 1.16.0
+env:
+  global:
+    - CI="travis"
+    - JRUBY_OPTS="--server -J-Xms512m -J-Xmx1024m"
+  matrix:
+    - MONGODB=3.4
+    - MONGODB=3.6
 notifications: false
+before_install:
+  - gem install bundler -v 1.16.0
 before_script:
+  - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0C49F3730359A14518585931BC711F9BA15703C6
+  - echo "deb http://repo.mongodb.org/apt/ubuntu precise/mongodb-org/${MONGODB} multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-${MONGODB}.list
+  - sudo apt-get update
+  - sudo apt-get install -y mongodb-org
+  - sudo service mongod start
+  - mongod --version
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 script:
+  - mongorestore -d awesome_explain_test ${PWD}/data/mongodb/customers.bson
+  - mongorestore -d awesome_explain_test ${PWD}/data/mongodb/line_items.bson
+  - mongorestore -d awesome_explain_test ${PWD}/data/mongodb/orders.bson
+  - mongorestore -d awesome_explain_test ${PWD}/data/mongodb/products.bson
   - bundle exec rspec
 after_script:
   - ./cc-test-reporter after-build -t simplecov -p /home/travis/build/sandboxws/awesome_explain

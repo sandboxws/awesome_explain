@@ -8,6 +8,10 @@ Currently the explain functionality only supports `Mongo::Collection::View::Aggr
 [![Test Coverage](https://api.codeclimate.com/v1/badges/75e1a5cb4b6a5c1ba4c8/test_coverage)](https://codeclimate.com/github/sandboxws/awesome_explain/test_coverage)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+<a href="https://www.universe.com/" target="_blank" rel="noopener noreferrer">
+  <img src="images/universe.png" height="41" width="153" alt="Sponsored by Universe" style="max-width:100%;">
+</a>
+
 ## Installation
 
 Add the following line to your application's Gemfile:
@@ -72,11 +76,6 @@ Below is a breakdown of the above winning plan:
 
 For information about MongoDB's explain output, please refer to the official MongoDB Explain documentation:
 https://docs.mongodb.com/manual/reference/explain-results/
-
-## TODO
-
-- [ ] Add Specs
-- [ ] Add more examples
 
 ## Contributing
 

@@ -1,0 +1,1 @@
+{"options":{},"indexes":[{"v":2,"key":{"_id":1},"name":"_id_","ns":"OrderExample.customers"},{"v":2,"key":{"email":1.0},"name":"email_1","ns":"OrderExample.customers"}],"uuid":"290a27943cbe49c08136a6ef9602c089"}
