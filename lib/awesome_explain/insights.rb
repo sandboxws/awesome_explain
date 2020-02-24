@@ -10,21 +10,19 @@ module AwesomeExplain
     end
 
     def init
-      if Rails.env.development?
-        if !Mongo::Monitoring::Global.subscribers['Command'].collect(&:class).include?(AwesomeExplain::CommandSubscriber)
-          @command_subscriber = AwesomeExplain::CommandSubscriber.new
-          Mongo::Monitoring::Global.subscribe(Mongo::Monitoring::COMMAND, @command_subscriber)
-        else
-          command_subscribers = Mongo::Monitoring::Global.subscribers['Command']
-          @command_subscriber = command_subscribers.select do |s|
-            s.class == AwesomeExplain::CommandSubscriber
-          end.first
-        end
-      end
+      command_subscribers = Mongo::Monitoring::Global.subscribers['Command']
+      @command_subscriber = command_subscribers.select do |s|
+        s.class == AwesomeExplain::CommandSubscriber
+      end.first
     end
 
     def tear_down
       # print stats to console
+      if @command_subscriber.nil?
+        puts 'Configure the command subscriber then try again.'
+        return
+      end
+
       @command_subscriber.stats_table
       @command_subscriber.clear
     end
