@@ -1,10 +1,11 @@
 module AwesomeExplain
   class Insights
-    attr_accessor :command_subscriber
+    attr_accessor :command_subscriber, :metrics
 
-    def self.analyze(&block)
+    def self.analyze(metrics = [], &block)
       instance = new
       instance.init
+      instance.metrics = metrics
       instance.instance_eval(&block)
       instance.tear_down
     end
@@ -17,14 +18,24 @@ module AwesomeExplain
     end
 
     def tear_down
-      # print stats to console
       if @command_subscriber.nil?
         puts 'Configure the command subscriber then try again.'
         return
       end
 
-      @command_subscriber.stats_table
-      @command_subscriber.clear
+      if @metrics.size.positive?
+        result = {}
+        @metrics.each do |m|
+          result[m] = @command_subscriber.get(m)
+        end
+
+        @command_subscriber.clear
+        return result
+      else
+        # print stats to console
+        @command_subscriber.stats_table
+        @command_subscriber.clear
+      end
     end
   end
 end

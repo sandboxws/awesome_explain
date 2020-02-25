@@ -114,6 +114,13 @@ module AwesomeExplain
       end.join("\n")
     end
 
+    def get(metric)
+      case metric
+      when :total_performed_queries
+        total_performed_queries
+      end
+    end
+
     def clear
       init
     end
