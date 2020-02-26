@@ -15,6 +15,7 @@ module AwesomeExplain
       @command_subscriber = command_subscribers.select do |s|
         s.class == AwesomeExplain::CommandSubscriber
       end.first
+      @command_subscriber.clear
     end
 
     def tear_down
