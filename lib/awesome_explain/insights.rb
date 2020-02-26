@@ -6,8 +6,9 @@ module AwesomeExplain
       instance = new
       instance.init
       instance.metrics = metrics
-      instance.instance_eval(&block)
+      block_result = instance.instance_eval(&block)
       instance.tear_down
+      block_result unless metrics.size.positive?
     end
 
     def init
