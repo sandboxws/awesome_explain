@@ -1,6 +1,6 @@
 module AwesomeExplain
   class CommandSubscriber
-    COMMAND_NAMES_BLACKLIST = ['createIndexes', 'explain', 'saslStart', 'saslContinue']
+    COMMAND_NAMES_BLACKLIST = ['createIndexes', 'explain', 'saslStart', 'saslContinue', 'listCollections', 'listIndexes']
     QUERIES = [
       :count,
       :distinct,
@@ -37,9 +37,6 @@ module AwesomeExplain
           collection_name = event.command[event.command_name]
         end
         @stats[:collections][collection_name] = Hash.new(0) if !@stats[:collections].include?(collection_name)
-        puts '-------------------'
-        puts command_name
-        puts '-------------------'
         @stats[:collections][collection_name][command_name] += 1
         @queries[request_id] = {
           command: command.select {|k, v| COMMAND_ALLOWED_KEYS.include?(k)},
