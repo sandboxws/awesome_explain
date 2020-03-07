@@ -2,13 +2,19 @@ module AwesomeExplain
   class CommandSubscriber
     COMMAND_NAMES_BLACKLIST = ['createIndexes', 'explain', 'saslStart', 'saslContinue', 'listCollections', 'listIndexes']
     QUERIES = [
-      :count,
-      :distinct,
       :aggregate,
+      :count,
+      :delete,
+      :distinct,
       :find,
       :getMore,
-      :update,
       :insert,
+      :update
+    ].freeze
+
+    DML_COMMANDS = [
+      :insert,
+      :update,
       :delete
     ].freeze
 
@@ -39,9 +45,32 @@ module AwesomeExplain
         @stats[:collections][collection_name] = Hash.new(0) if !@stats[:collections].include?(collection_name)
         @stats[:collections][collection_name][command_name] += 1
         @queries[request_id] = {
+          command_name: event.command_name,
           command: command.select {|k, v| COMMAND_ALLOWED_KEYS.include?(k)},
-          collection_name: collection_name
-        }
+          collection_name: collection_name,
+          stacktrace: caller
+        }.with_indifferent_access
+
+        unless DML_COMMANDS.include?(command_name) || Rails.const_defined?('Console')
+          begin
+            r = Renderers::Mongoid.new(nil, Mongoid.default_client.database.command({explain: event.command}).documents.first)
+            exp = Explain.create({
+              collection: collection_name,
+              selector: @queries[request_id][:command][:query],
+              winning_plan: r.winning_plan_data.first,
+              used_indexes: r.winning_plan_data.last.join(', '),
+              duration: (r.execution_stats.dig('executionTimeMillis').to_f/1000).round(5),
+              documents_returned: r.execution_stats.dig('nReturned'),
+              documents_examined: r.execution_stats.dig('totalDocsExamined'),
+              keys_examined: r.execution_stats.dig('totalKeysExamined'),
+              rejected_plans: r.rejected_plans.size,
+              stacktrace_id: resolve_stracktrace_id(request_id)
+            })
+            @queries[request_id][:explain_id] = exp&.id
+          rescue => exception
+            # TODO: init logger using config
+          end
+        end
       end
     end
 
@@ -53,6 +82,26 @@ module AwesomeExplain
         @stats[:performed_queries][command_name] += 1
         @stats[:total_duration] += duration
         @queries[request_id][:duration] = duration
+        unless Rails.const_defined?('Console')
+          begin
+            log = {
+              operation: command_name,
+              collection: @queries[request_id][:collection_name],
+              duration: duration,
+              selector: @queries[request_id][:command][:query].to_s,
+              limit: @queries[request_id][:command][:limit],
+              sort: @queries[request_id][:command][:sort],
+              key: @queries[request_id][:command][:key],
+              stacktrace_id: resolve_stracktrace_id(request_id),
+              explain_id: @queries[request_id][:explain_id]
+            }
+            Log.create(log)
+          rescue => exception
+            # TODO: init logger using config
+          end
+        end
+
+        puts stats_table unless Rails.const_defined?('Server')
       end
     end
 
@@ -134,6 +183,18 @@ module AwesomeExplain
         collections: {},
         performed_queries: QUERIES.inject(Hash.new) {|h, q| h[q] = 0; h}
       }
+    end
+
+    def resolve_stracktrace_id(request_id)
+      stacktrace_str = @queries[request_id][:stacktrace]
+        .select {|c| c =~ /^#{Rails.root.to_s + '\/(lib|app|db)\/'}/ }
+        .map {|c| c.gsub Rails.root.to_s, ''}
+        .to_json
+      stacktrace = Stacktrace.find_or_create_by({
+        stacktrace: stacktrace_str
+      })
+
+      stacktrace.id
     end
   end
 end

@@ -6,6 +6,7 @@
 /pkg/
 /spec/reports/
 /tmp/
+/log/
 *.gem
 
 # rspec failure tracking
@@ -201,5 +202,12 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+
+### VisualStudioCode ###
+.vscode
+
+### VisualStudioCode Patch ###
+# Ignore all local history of files
+.history
 
 # End of https://www.gitignore.io/api/vim,osx,windows,rubymine,sublimetext,visualstudiocode

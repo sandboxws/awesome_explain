@@ -3,9 +3,9 @@ module AwesomeExplain
     class Mongoid
       attr_reader :result, :query
 
-      def initialize(query)
+      def initialize(query, result = nil)
         @query = query
-        @result = query.explain
+        @result = result || query.explain
       end
 
       def print
@@ -53,6 +53,10 @@ module AwesomeExplain
         end
 
         table
+      end
+
+      def parsed_query
+        root.dig('parsedQuery')
       end
 
       def winning_plan_data
@@ -105,6 +109,7 @@ module AwesomeExplain
       end
 
       def stage_label_and_stats(stage)
+        return unless stage.present?
         str = "#{stage.dig('stage')} ("
         str += "#{stage.dig('docsExamined')} / " if stage.dig('docsExamined').present?
         str += stage.dig('nReturned').to_s if stage.dig('nReturned').present?
