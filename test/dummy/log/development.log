@@ -1,0 +1,64 @@
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[35m (5.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "logs"[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "logs"[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "logs"[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM (SELECT 1 AS one FROM "logs" LIMIT ? OFFSET ?) subquery_for_count[0m  [["LIMIT", 25], ["OFFSET", 0]]
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[36mLog Load (0.1ms)[0m  [1m[34mSELECT "logs".* FROM "logs" ORDER BY "logs"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT COUNT(*) AS count_all, "opeation" AS opeation FROM "logs" GROUP BY "opeation"[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "logs"[0m
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT COUNT(*) AS count_all, "logs"."operation" AS logs_operation FROM "logs" GROUP BY "logs"."operation"[0m
+  [1m[35m (0.3ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[35m (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "stacktraces"[0m
+  [1m[36mStacktrace Load (0.3ms)[0m  [1m[34mSELECT "stacktraces".* FROM "stacktraces" ORDER BY "stacktraces"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mStacktrace Load (1.5ms)[0m  [1m[34mSELECT "stacktraces".* FROM "stacktraces" ORDER BY "stacktraces"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mStacktrace Load (2.1ms)[0m  [1m[34mSELECT "stacktraces".* FROM "stacktraces" ORDER BY "stacktraces"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mStacktrace Load (0.2ms)[0m  [1m[34mSELECT "stacktraces".* FROM "stacktraces" ORDER BY "stacktraces"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mStacktrace Load (0.2ms)[0m  [1m[34mSELECT "stacktraces".* FROM "stacktraces" ORDER BY "stacktraces"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mStacktrace Exists? (2.6ms)[0m  [1m[34mSELECT 1 AS one FROM "stacktraces" GROUP BY stacktraces.id LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mStacktrace Load (14.3ms)[0m  [1m[34mSELECT stacktraces.id, stacktraces.stacktrace, count(logs.id) as logs FROM "stacktraces" GROUP BY stacktraces.id ORDER BY stacktraces.id desc LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[36mStacktrace Exists? (8.9ms)[0m  [1m[34mSELECT 1 AS one FROM "stacktraces" INNER JOIN "logs" ON "logs"."stacktrace_id" = "stacktraces"."id" GROUP BY stacktraces.id LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mStacktrace Load (1.6ms)[0m  [1m[34mSELECT stacktraces.id, stacktraces.stacktrace, count(logs.id) as logs FROM "stacktraces" INNER JOIN "logs" ON "logs"."stacktrace_id" = "stacktraces"."id" GROUP BY stacktraces.id ORDER BY stacktraces.id desc LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[36mStacktrace Exists? (5.7ms)[0m  [1m[34mSELECT 1 AS one FROM "stacktraces" INNER JOIN "logs" ON "logs"."stacktrace_id" = "stacktraces"."id" GROUP BY stacktraces.id LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mStacktrace Load (2.6ms)[0m  [1m[34mSELECT stacktraces.id, stacktraces.stacktrace, count(logs.id) as logs, min(logs.duration) as min_duration FROM "stacktraces" INNER JOIN "logs" ON "logs"."stacktrace_id" = "stacktraces"."id" GROUP BY stacktraces.id ORDER BY stacktraces.id desc LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[36mStacktrace Exists? (3.5ms)[0m  [1m[34mSELECT 1 AS one FROM "stacktraces" INNER JOIN "logs" ON "logs"."stacktrace_id" = "stacktraces"."id" GROUP BY stacktraces.id LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mStacktrace Load (6.4ms)[0m  [1m[34mSELECT stacktraces.id, stacktraces.stacktrace, count(logs.id) as log_count, min(logs.duration) as min_duration, max(logs.duration) as max_duration FROM "stacktraces" INNER JOIN "logs" ON "logs"."stacktrace_id" = "stacktraces"."id" GROUP BY stacktraces.id ORDER BY max(logs.duration) LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[36mStacktrace Exists? (2.6ms)[0m  [1m[34mSELECT 1 AS one FROM "stacktraces" INNER JOIN "logs" ON "logs"."stacktrace_id" = "stacktraces"."id" GROUP BY stacktraces.id LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mStacktrace Load (5.0ms)[0m  [1m[34mSELECT stacktraces.id, stacktraces.stacktrace, count(logs.id) as log_count, min(logs.duration) as min_duration, max(logs.duration) as max_duration FROM "stacktraces" INNER JOIN "logs" ON "logs"."stacktrace_id" = "stacktraces"."id" GROUP BY stacktraces.id ORDER BY max(logs.duration) desc LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[36mLog Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "logs" GROUP BY logs.operation LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mLog Load (0.2ms)[0m  [1m[34mSELECT logs.id, logs.operation, count(logs.id) as count, max(logs.duation) as max_duration FROM "logs" GROUP BY logs.operation LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[36mLog Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "logs" GROUP BY "logs"."operation" LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mLog Load (0.2ms)[0m  [1m[34mSELECT id, operation, count(id) as count, max(duation) as max_duration FROM "logs" GROUP BY "logs"."operation" LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[36mLog Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "logs" GROUP BY "logs"."operation" LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mLog Load (1.3ms)[0m  [1m[34mSELECT id, operation, count(id) as count, max(duration) as max_duration FROM "logs" GROUP BY "logs"."operation" LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[36mLog Load (1.7ms)[0m  [1m[34mSELECT id, operation, count(id) as count, max(duration) as max_duration FROM "logs" GROUP BY "logs"."operation" ORDER BY "logs"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mLog Exists? (0.2ms)[0m  [1m[34mSELECT 1 AS one FROM "logs" GROUP BY id, operation LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mLog Load (0.1ms)[0m  [1m[34mSELECT id, operation, count(id) as count, max(duration) as max_duration FROM "logs" GROUP BY id, operation LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[36mLog Load (1.2ms)[0m  [1m[34mSELECT id, operation, count(id) as count, max(duration) as max_duration FROM "logs" GROUP BY id, operation ORDER BY "logs"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mLog Load (0.3ms)[0m  [1m[34mSELECT id, operation, count(id) as count, max(duration) as max_duration FROM "logs" GROUP BY id, operation LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[36mLog Load (0.1ms)[0m  [1m[34mSELECT id, operation, count(id) as count, max(duration) as max_duration FROM "logs" GROUP BY id, operation LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[36mLog Load (0.2ms)[0m  [1m[34mSELECT id, operation, count(id) as count, max(duration) as max_duration FROM "logs" GROUP BY id, operation LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[36mLog Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "logs" GROUP BY id, operation LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mLog Load (0.1ms)[0m  [1m[34mSELECT id, operation, count(id) as count, max(duration) as max_duration FROM "logs" GROUP BY id, operation LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[35m (0.1ms)[0m  [1m[34mSELECT sqlite_version(*)[0m
+  [1m[36mLog Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "logs" GROUP BY id, operation LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mLog Load (0.1ms)[0m  [1m[34mSELECT id, operation, count(id) as count, max(duration) as max_duration FROM "logs" GROUP BY id, operation LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[36mLog Exists? (0.9ms)[0m  [1m[34mSELECT 1 AS one FROM "logs" GROUP BY "logs"."operation" LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mLog Load (1.1ms)[0m  [1m[34mSELECT operation, count(id) as count, max(duration) as max_duration FROM "logs" GROUP BY "logs"."operation" LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[36mLog Exists? (0.9ms)[0m  [1m[34mSELECT 1 AS one FROM "logs" GROUP BY "logs"."operation" LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mLog Load (1.3ms)[0m  [1m[34mSELECT operation, count(operation) as count, max(duration) as max_duration FROM "logs" GROUP BY "logs"."operation" LIMIT ?[0m  [["LIMIT", 5]]
+  [1m[36mLog Exists? (0.9ms)[0m  [1m[34mSELECT 1 AS one FROM "logs" GROUP BY "logs"."operation" LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mLog Load (1.1ms)[0m  [1m[34mSELECT operation, count(operation) as count, max(duration) as max_duration FROM "logs" GROUP BY "logs"."operation"[0m
+  [1m[36mLog Load (1.3ms)[0m  [1m[34mSELECT operation, count(operation) as count, max(duration) as max_duration FROM "logs" GROUP BY "logs"."operation"[0m
+  [1m[36mLog Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "logs" GROUP BY "logs"."operation" LIMIT ?[0m  [["LIMIT", 1]]
+  [1m[36mLog Load (0.9ms)[0m  [1m[34mSELECT operation, count(operation) as count, max(duration) as max_duration FROM "logs" GROUP BY "logs"."operation"[0m
+  [1m[36mLog Load (1.0ms)[0m  [1m[34mSELECT operation, count(operation) as count, max(duration) as max_duration FROM "logs" GROUP BY "logs"."operation"[0m
+  [1m[36mLog Load (1.0ms)[0m  [1m[34mSELECT operation, count(operation) as count, max(duration) as max_duration FROM "logs" GROUP BY "logs"."operation"[0m
+  [1m[36mLog Load (1.4ms)[0m  [1m[34mSELECT operation, count(operation) as count, max(duration) as max_duration FROM "logs" GROUP BY "logs"."operation"[0m
+  [1m[36mLog Load (1.4ms)[0m  [1m[34mSELECT operation, count(operation) as count, max(duration) as max_duration FROM "logs" GROUP BY "logs"."operation"[0m
+  [1m[36mLog Load (1.0ms)[0m  [1m[34mSELECT operation, count(operation) as count, max(duration) as max_duration FROM "logs" GROUP BY "logs"."operation"[0m
+  [1m[36mLog Load (1.5ms)[0m  [1m[34mSELECT operation, count(operation) as count, max(duration) as max_duration FROM "logs" GROUP BY "logs"."operation"[0m

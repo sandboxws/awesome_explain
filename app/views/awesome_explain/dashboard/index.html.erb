@@ -1,0 +1,45 @@
+<h1 class="text-2xl pl-6 text-gray-700">
+  Dashboard
+</h1>
+<hr class="mt-2 border-b-1 border-gray-200" />
+<div class="flex flex-wrap mb-2">
+  <%= render partial: 'dashboard_stat', locals: { label: 'Find', count: @find_logs, max_duration: @find_max, color: 'gray' } %>
+  <%= render partial: 'dashboard_stat', locals: { label: 'Insert', count: @insert_logs, max_duration: @insert_max, color: 'purple' } %>
+  <%= render partial: 'dashboard_stat', locals: { label: 'Update', count: @update_logs, max_duration: @update_max, color: 'teal' } %>
+  <%= render partial: 'dashboard_stat', locals: { label: 'Distinct', count: @distinct_logs, max_duration: @distinct_max, color: 'yellow' } %>
+</div>
+<div class="flex flex-wrap mb-2">
+  <%= render partial: 'dashboard_stat', locals: { label: 'Delete', count: @delete_logs, max_duration: @delete_max, color: 'red' } %>
+  <%= render partial: 'dashboard_stat', locals: { label: 'Aggregate', count: @aggregate_logs, max_duration: @aggregate_max, color: 'blue' } %>
+  <%= render partial: 'dashboard_stat', locals: { label: 'Count', count: @count_logs, max_duration: @count_max, color: 'indigo' } %>
+  <%= render partial: 'dashboard_stat', locals: { label: 'GetMore', count: @getmore_logs, max_duration: @getmore_max, color: 'pink' } %>
+</div>
+
+<hr class="mt-8 mb-4 border-b-1 border-gray-200" />
+<h2 class="text-xl mb-3 pl-6 text-gray-700">
+  Latest Logs
+</h2>
+<table class="text-left text-sm w-full border-collapse">
+  <thead class="bg-gray-300">
+    <tr>
+      <th class="px-4 py-2">Collection</th>
+      <th class="px-4 py-2">Operation</th>
+      <th class="px-4 py-2">Selector</th>
+      <th class="px-4 py-2">Duration</th>
+    </tr>
+  </thead>
+  <tbody class="align-baseline">
+    <%= render partial: "log", collection: @logs, locals: { full: false } %>
+  </tbody>
+</table>
+
+<hr class="mt-8 mb-4 border-b-1 border-gray-200" />
+<h2 class="text-xl mb-3 pl-6 text-gray-700">
+  Latest Stacktraces
+</h2>
+<table class="text-left text-sm w-full border-collapse">
+  <thead class="bg-gray-300">
+  <tbody class="align-baseline">
+    <%= render partial: "stacktrace", collection: @stacktraces %>
+  </tbody>
+</table>

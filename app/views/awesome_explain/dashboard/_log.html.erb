@@ -1,0 +1,20 @@
+<tr class="<%= cycle('', 'bg-gray-100') -%>">
+  <td class="border-b px-4 py-2">
+    <%= log.collection %>
+  </td>
+  <td class="border-b px-4 py-2">
+    <%= log.operation %>
+  </td>
+  <td class="border-b px-4 py-2">
+    <%= log.selector.present? ? raw("<pre><code class=\"language-json\">#{JSON.pretty_generate(JSON.parse(log.selector_json))}</code></pre>"): 'N/A' %>
+  </td>
+  <td class="border-b px-4 py-2"><%= log.duration %></td>
+  <% if full %>
+  <td class="border-b px-4 py-2"><%= log.created_at.to_s(:short) %></td>
+  <% end%>
+  <%# <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
+    <button class="text-primary hover:bg-gray-100 hover:bg-primary border border-primary py-1 px-3 rounded text-xs">
+      DETAILS
+    </button>
+  </td> %>
+</tr>

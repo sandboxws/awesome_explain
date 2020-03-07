@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Awesome explain</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag "awesome_explain/application", media: "all" %>
+  <%= javascript_include_tag "awesome_explain/application" %>
+</head>
+<body>
+
+<div class="App w-full max-w-screen-xl mx-auto px-6 font-sans antialiased">
+  <div class="lg:flex -mx-6">
+    <%= render "common/nav" %>
+    <div
+        id="content-wrapper"
+        class="sm:mt-0 md:mt-0 lg:mt-10 xl:mt-10 shadow overflow-hidden sm:rounded-lg border-b border-gray-200 min-h-screen w-full bg-white lg:static lg:max-h-full lg:overflow-visible lg:w-3/4 xl:w-4/5"
+      >
+        <div id="content">
+          <div id="app" class="flex">
+            <div class="pt-6 pb-6 lg:pt-28 w-full">
+              <%= yield %>
+            </div>
+          </div>
+        </div>
+  </div>
+</div>
+
+</body>
+</html>
