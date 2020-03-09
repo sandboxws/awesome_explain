@@ -1,0 +1,23 @@
+<tr class="<%= cycle('', 'bg-gray-100') -%>">
+  <td class="border-b px-4 py-2">
+    <%= controller.controller %>
+  </td>
+  <td class="border-b px-4 py-2">
+    <%= controller.action %>
+  </td>
+  <td class="border-b px-4 py-2">
+    <%= controller.path %>
+  </td>
+  <td class="border-b px-4 py-2"><%= controller.logs.size %></td>
+  <td class="border-b px-4 py-2">
+    <%= controller.total_duration %>
+  </td>
+  <td class="border-b px-4 py-2 items-end">
+  <span class="hidden sm:block shadow-sm rounded-md">
+      <button type="button" class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm leading-5 font-medium rounded-md bg-gray-500 text-white hover:bg-gray-600 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out">
+        <svg class="-ml-1 mr-2 h-5 w-3 hover:text-white" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M.2 10a11 11 0 0 1 19.6 0A11 11 0 0 1 .2 10zm9.8 4a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm0-2a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/></svg>
+        <%= link_to 'Inspect', "/awesome_explain/controllers/#{controller.id}" %>
+      </button>
+    </span>
+  </td>
+</tr>

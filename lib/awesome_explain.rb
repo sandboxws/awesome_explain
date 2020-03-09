@@ -1,5 +1,6 @@
 require 'awesome_explain/version'
 require 'awesome_explain/engine'
+require 'awesome_print'
 require 'sqlite3'
 require 'active_record'
 require 'kaminari'
@@ -11,16 +12,24 @@ require 'awesome_explain/kernel'
 require 'awesome_explain/command_subscriber'
 require 'awesome_explain/insights'
 
+module AwesomeExplain
+  def self.clean
+    AwesomeExplain::Log.delete_all
+    AwesomeExplain::Explain.delete_all
+    AwesomeExplain::Stacktrace.delete_all
+    AwesomeExplain::Controller.delete_all
+  end
+end
+
 # Configure SQLite
 # TODO: Move into a config initializer
 
-# ActiveRecord::Base.logger = Logger.new(STDOUT)
 ActiveRecord::Base.logger = nil
 
 AE_DB_CONFIG = {
   development: {
     adapter: 'sqlite3',
-    database: "/Users/sandboxws/Development/Universe/uniiverse/log/awesome_explain.db"
+    database: "#{Rails.root || '.'}/log/awesome_explain.db"
   }
 }.with_indifferent_access[Rails.env]
 
@@ -28,37 +37,66 @@ AE_DB_CONFIG = {
 # ActiveRecord::Base.establish_connection AE_DB_CONFIG
 
 # ActiveRecord::Schema.define do
-#   create_table :logs do |t|
-#     t.column :collection, :string
-#     t.column :operation, :string
-#     t.column :sort, :string
-#     t.column :limit, :string
-#     t.column :key, :string
-#     t.column :selector, :text
-#     t.column :duration, :double
-#     t.column :stacktrace_id, :integer
-#     t.column :explain_id, :integer
+#   create_table :stacktraces do |t|
+#     t.column :stacktrace, :string
 #     t.timestamps
 #   end
 
-#   create_table :stacktraces do |t|
-#     t.column :stacktrace, :text
+#   create_table :controllers do |t|
+#     t.column :controller, :string
+#     t.column :action, :string
+#     t.column :path, :string
+#     t.column :params, :string
+#     t.timestamps
+#   end
+
+#   create_table :logs do |t|
+#     t.column :collection, :string
+#     t.column :operation, :string
+#     t.column :collscan, :integer
+#     t.column :command, :string
+#     t.column :duration, :double
+#     t.column :session_id, :string
+#     t.column :lsid, :string
+#     t.column :stacktrace_id, :integer
+#     t.column :explain_id, :integer
+#     t.column :controller_id, :integer
 #     t.timestamps
 #   end
 
 #   create_table :explains do |t|
 #     t.column :collection, :string
-#     t.column :selector, :text
+#     t.column :command, :string
+#     t.column :collscan, :integer
 #     t.column :winning_plan, :string
+#     t.column :winning_plan_raw, :string
 #     t.column :used_indexes, :string
 #     t.column :duration, :double
 #     t.column :documents_returned, :integer
 #     t.column :documents_examined, :integer
 #     t.column :keys_examined, :integer
 #     t.column :rejected_plans, :integer
+#     t.column :session_id, :string
+#     t.column :lsid, :string
 #     t.column :stacktrace_id, :integer
+#     t.column :controller_id, :integer
 #     t.timestamps
 #   end
 # end
 
 ActiveRecord::Base.establish_connection(AE_DB_CONFIG).connection.exec_query("BEGIN TRANSACTION; END;")
+
+ActiveSupport::Notifications.subscribe 'start_processing.action_controller' do |*args|
+  data = args.extract_options!
+  unless data[:controller] =~ /AwesomeExplain/ || data[:controller] =~ /ErrorsController/ || data[:path] =~ /awesome_explain/
+    Thread.current[:ae_controller_data] = data
+  end
+  Thread.current[:ae_session_id] = SecureRandom.uuid
+end
+
+# ActiveSupport::Notifications.subscribe 'process_action.action_controller' do |*args|
+#   data = args.extract_options!
+#   puts 'process_action.action_controller'
+#   puts data.inspect
+#   puts Thread.current[:ae_controller_id]
+# end

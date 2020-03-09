@@ -1,132 +1,40 @@
-<h1 class="text-2xl pl-6 text-gray-700">
-  Logs
-  <span class="text-pink-600 text-sm"><%= @logs_count %></span>
-</h1>
-<hr class="mt-2 border-b-1 border-gray-200" />
-
-<%# <div id="tree" style="height:700px; width:900px"></div> %>
-
-<table class="text-left text-sm w-full border-collapse">
+<div class="px-4 py-2 border-b border-gray-200 sm:px-6">
+  <h1 class="text-2xl leading-6 font-medium text-gray-900">
+    Logs
+  </h1>
+  <p class="mt-1 text-sm leading-5 text-gray-700 pt-3 mb-2">
+    <% @logs_counts.each do |op, count| %>
+      <a href="javascript:void(0)" onclick="operationHandler('<%= op %>')" class="border border-gray-400 rounded bg-gray-200 px-2 py-1 text-sm mr-2">
+        <%= op %>
+        <span class="text-gray-500">|</span>
+        <%= count %>
+      </a>
+    <% end %>
+    <% if @collscans.positive? %>
+      <a href="javascript:void(0)" onclick="collscanHandler()" class="border border-red-700 rounded bg-red-600 px-2 py-1 text-white font-semibold text-sm mr-2">
+        COLLSCAN
+        <span class="text-white">|</span>
+        <%= @collscans %>
+      </a>
+    <% end %>
+    <a href="/awesome_explain/logs" onclick="collscanHandler()" class="border border-gray-400 rounded bg-gray-200 px-2 py-1 text-sm mr-2">
+      EVERYTHING
+    </a>
+  </p>
+  <%= select_tag "logs_collections", options_from_collection_for_select(@collections, 'id', 'name', @current_collection), onchange: 'collection_select_changed()' %>
+</div>
+<table class="text-left w-full text-sm border-collapse">
   <thead class="bg-gray-300">
     <tr>
       <th class="px-4 py-2">Collection</th>
       <th class="px-4 py-2">Operation</th>
-      <th class="px-4 py-2">Selector</th>
+      <th class="px-4 py-2">Command</th>
       <th class="px-4 py-2">Duration</th>
-      <th class="px-4 py-2 items-end">
-      <ul class="flex items-center justify-center pl-0 list-none rounded my-2">
-        <li><a class="inline-block relative py-2 px-3 leading-tight bg-white border border-gray-300 text-blue-700 border-r-0 ml-0 rounded-l hover:bg-gray-200 page-link" href="?selectors=no">-Selectors</a></li>
-        <li><a class="inline-block relative py-2 px-3 leading-tight bg-white border border-gray-300 text-blue-700 rounded-r hover:bg-gray-200 page-link" href="?selectors=yes">+Selectors</a></li>
-      </ul>
-      </th>
+      <th class="px-4 py-2 items-end">&nbsp;</th>
     </tr>
   </thead>
   <tbody class="align-baseline">
     <%= render partial: "log", collection: @logs, locals: { full: true } %>
-    <%# <tr>
-      <td class="border-b px-4 py-2">users</td>
-      <td class="border-b px-4 py-2">find</td>
-      <td class="border-b px-4 py-2">EMPTY</td>
-      <td class="border-b px-4 py-2">0.00147</td>
-      <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-        <button class="text-primary hover:bg-gray-100 hover:bg-primary border border-primary py-1 px-3 rounded text-xs">
-          DETAILS
-        </button>
-      </td>
-    </tr>
-    <tr class="bg-gray-100">
-      <td class="border-b px-4 py-2">rates</td>
-      <td class="border-b px-4 py-2">count</td>
-      <td class="border-b px-4 py-2">
-        {'{"deleted_at"=>nil, "cost_id"=>"5d601356d5cc2e71597c31b5", "state"=>"locked"}'}
-      </td>
-      <td class="border-b px-4 py-2">0.00147</td>
-      <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-        <button class="text-primary hover:bg-gray-100 hover:bg-primary border border-primary py-1 px-3 rounded text-xs">
-          DETAILS
-        </button>
-      </td>
-    </tr>
-    <tr>
-      <td class="border-b px-4 py-2">users</td>
-      <td class="border-b px-4 py-2">find</td>
-      <td class="border-b px-4 py-2">EMPTY</td>
-      <td class="border-b px-4 py-2">0.00147</td>
-      <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-        <button class="text-primary hover:bg-gray-100 hover:bg-primary border border-primary py-1 px-3 rounded text-xs">
-          DETAILS
-        </button>
-      </td>
-    </tr>
-    <tr class="bg-gray-100">
-      <td class="border-b px-4 py-2">rates</td>
-      <td class="border-b px-4 py-2">count</td>
-      <td class="border-b px-4 py-2">
-        {'{"deleted_at"=>nil, "cost_id"=>"5d601356d5cc2e71597c31b5", "state"=>"locked"}'}
-      </td>
-      <td class="border-b px-4 py-2">0.00147</td>
-      <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-        <button class="text-primary hover:bg-gray-100 hover:bg-primary border border-primary py-1 px-3 rounded text-xs">
-          DETAILS
-        </button>
-      </td>
-    </tr> %>
   </tbody>
 </table>
 <%= paginate @logs %>
-
-<%# <script>
-// Define a dataset
-    var data_1 = [
-        { id: 1, text_1: "Chaos", text_2: "Void", father: null, color:"#FF5722" },
-        { id: 2, text_1: "Tartarus", text_2: "Abyss", father: 1, color:"#FFC107" },
-        { id: 3, text_1: "Gaia", text_2: "Earth", father: 1, color:"#8BC34A" },
-        { id: 4, text_1: "Eros", text_2: "Desire", father: 1,  color:"#00BCD4" }];
-
-    var data_2 = [
-        { id: 1, text_1: "Chaos", text_2: " Void", father: null, color:"#2196F3" },
-        { id: 2, text_1: "Tartarus", text_2: "Abyss", father: 1 ,color:"#F44336"},
-        { id: 3, text_1: "Gaia", text_2: "Earth", father: 1,color:"#673AB7" },
-        { id: 4, text_1: "Eros", text_2: "Desire", father: 1,color:"#009688" },
-        { id: 5, text_1: "Uranus", text_2: "Sky", father: 3,color:"#4CAF50" },
-        { id: 6, text_1: "Ourea", text_2: "Mountains", father: 3,color:"#FF9800" }];
-
-        var data_3 = [
-        { id: 1, text_1: "Chaos", text_2: "Void", father: null, color:"#2196F3" },
-        { id: 2, text_1: "Tartarus", text_2: "Abyss", father: 1 ,color:"#F44336"},
-        { id: 3, text_1: "Gaia", text_2: "Earth", father: 1,color:"#673AB7" },
-        { id: 4, text_1: "Eros", text_2: "Desire", father: 1,color:"#009688" },
-        { id: 5, text_1: "Uranus", text_2: "Sky", father: 3,color:"#4CAF50" },
-        { id: 6, text_1: "Ourea", text_2: "Mountains", father: 3,color:"#FF9800" },
-        { id: 7, text_1: "Hermes", text_2: " Sky", father: 4,color:"#2196F3" },
-        { id: 8, text_1: "Aphrodite", text_2: "Love", father: 4,color:"#8BC34A" },
-        { id: 3.3, text_1: "Love", text_2: "Peace", father: 8,color:"#c72e99" },
-        { id: 4.1, text_1: "Hope", text_2: "Life", father: 8,color:"#2eecc7" }
-        ];
-
-    var myTree = Treeviz.create({
-        htmlId: "tree",
-        idKey: "id",
-        hasFlatData: true,
-        relationnalField: "father",
-        hasPanAndZoom: true,
-        nodeWidth:120,
-        nodeHeight:80,
-        mainAxisNodeSpacing:2,
-        isHorizontal:false,
-        renderNode: function(node) {
-        return result = "<div class='box' style='cursor:pointer;height:"+node.settings.nodeHeight+"px; width:"+node.settings.nodeWidth+"px;display:flex;flex-direction:column;justify-content:center;align-items:center;background-color:"
-                +node.data.color+
-              ";border-radius:5px;'><div><strong>"
-          +node.data.text_1+
-          "</strong></div><div>is</div><div><i>"
-          +node.data.text_2+
-          "</i></div></div>";
-        },
-        linkWidth : (nodeData)=> 5,
-        linkShape:"curve",
-        linkColor : (nodeData) => "#B0BEC5" ,
-        onNodeClick : (nodeData) => console.log(nodeData)
-    });
-    myTree.refresh(data_1);
-</script> %>

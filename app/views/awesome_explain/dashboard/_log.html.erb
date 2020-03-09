@@ -6,15 +6,17 @@
     <%= log.operation %>
   </td>
   <td class="border-b px-4 py-2">
-    <%= log.selector.present? ? raw("<pre><code class=\"language-json\">#{JSON.pretty_generate(JSON.parse(log.selector_json))}</code></pre>"): 'N/A' %>
+    <%= log.command.present? ? raw("<pre><code class=\"language-json\">#{JSON.pretty_generate(JSON.parse(log.command))}</code></pre>"): 'N/A' %>
   </td>
   <td class="border-b px-4 py-2"><%= log.duration %></td>
   <% if full %>
-  <td class="border-b px-4 py-2"><%= log.created_at.to_s(:short) %></td>
+  <td class="border-b px-4 py-2">
+  <span class="hidden sm:block shadow-sm rounded-md">
+      <button type="button" class="inline-flex items-center px-3 py-1 border border-gray-300 text-sm leading-5 font-medium rounded-md bg-purple-500 text-white hover:bg-purple-600 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 active:text-gray-800 active:bg-gray-50 transition duration-150 ease-in-out">
+        <svg class="-ml-1 mr-2 h-5 w-3 hover:text-white" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M17 12h-6v4h1v4H8v-4h1v-4H3v4h1v4H0v-4h1v-4a2 2 0 0 1 2-2h6V6H7V0h6v6h-2v4h6a2 2 0 0 1 2 2v4h1v4h-4v-4h1v-4z"/></svg>
+        <%= link_to 'Explain', "/awesome_explain/logs/#{log.id}" %>
+      </button>
+    </span>
+  </td>
   <% end%>
-  <%# <td class="px-6 py-4 whitespace-no-wrap text-right border-b border-gray-200 text-sm leading-5 font-medium">
-    <button class="text-primary hover:bg-gray-100 hover:bg-primary border border-primary py-1 px-3 rounded text-xs">
-      DETAILS
-    </button>
-  </td> %>
 </tr>

@@ -14,6 +14,10 @@
  *= require_self
  */
 
+ .winning-plan {
+  font-family: 'Fira Sans', sans-serif !important;
+ }
+
  .wrapper {
   display: flex;
   justify-content: center;
@@ -70,4 +74,20 @@ SVG Icons - svgicons.sparkk.fr
 .svg-icon circle {
   stroke: #4691f6;
   stroke-width: 1;
+}
+
+code[class*="language-"],
+pre[class*="language-"] {
+  font-size: 0.8rem;
+  white-space: pre-wrap !important;
+}
+
+#tree i {
+  font-style: normal;
+}
+
+#tree i strong {
+  font-weight: 500;
+  font-style: normal;
+  color: #718096;
 }

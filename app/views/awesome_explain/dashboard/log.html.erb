@@ -1,7 +1,139 @@
-<h1 class="text-2xl pl-6 text-gray-700">
-  Log #<%= @log.id %>
-  <span class="text-lg font-medium bg-green-500 py-1 px-2 rounded text-white align-middle"><%= @log.collection %></span>
-  <span class="text-lg font-medium bg-purple-500 py-1 px-2 rounded text-white align-middle"><%= @log.operation %></span>
-  <span class="text-lg font-medium bg-orange-500 py-1 px-2 rounded text-white align-middle"><%= @log.duration %></span>
-</h1>
-<hr class="mt-2 border-b-1 border-gray-200" />
+<div class="bg-white overflow-hidden sm:rounded-lg">
+  <div class="px-4 py-2 border-b border-gray-200 sm:px-6">
+    <h3 class="text-lg leading-6 font-medium text-gray-900">
+      Log #<%= @log.id%>
+    </h3>
+    <p class="mt-1 max-w-2xl text-sm leading-5 text-gray-500">
+      <%= @log.created_at.to_s(:db) %>
+    </p>
+  </div>
+  <div>
+    <dl>
+      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-2 sm:gap-4 sm:px-6 border-solid border-b-2 border-gray-100">
+        <dt class="text-sm leading-5 font-medium text-gray-600">
+          Collection / Used Indexes
+        </dt>
+        <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0">
+          <span class="bg-blue-500 text-white font-semibold rounded-full px-4 py-2">
+            <%= @log.collection %>
+          </span>
+          <span class="px-2 text-gray-500">/</span>
+          <span class="bg-gray-200 text-gray-700 rounded-full px-4 py-2">
+            <%= @explain.used_indexes %>
+          </span>
+        </dd>
+      </div>
+      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-6 border-solid border-b-2 border-gray-100">
+        <dt class="text-sm leading-5 font-medium text-gray-600">
+          Duration
+        </dt>
+        <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0">
+          <span class="bg-gray-200 text-gray-700 rounded-full px-4 py-2">
+            <%= @log.duration %>
+          </span>
+        </dd>
+        <dt class="text-sm leading-5 font-medium text-gray-600">
+          Documents Examined
+        </dt>
+        <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0">
+          <span class="bg-gray-200 text-gray-700 rounded-full px-4 py-2">
+            <%= @explain.documents_examined %>
+          </span>
+        </dd>
+      </div>
+      <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-6 border-solid border-b-2 border-gray-100">
+        <dt class="text-sm leading-5 font-medium text-gray-600">
+          Documents Returned
+        </dt>
+        <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0">
+          <span class="bg-gray-200 text-gray-700 rounded-full px-4 py-2">
+            <%= @explain.documents_returned %>
+          </span>
+        </dd>
+        <dt class="text-sm leading-5 font-medium text-gray-600">
+          Keys Examined
+        </dt>
+        <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0">
+          <span class="bg-gray-200 text-gray-700 rounded-full px-4 py-2">
+            <%= @explain.keys_examined %>
+          </span>
+        </dd>
+      </div>
+      <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-4 sm:gap-4 sm:px-6 border-solid border-b-2 border-gray-100">
+        <dt class="text-sm leading-5 font-medium text-gray-600">
+          Rejected Plans
+        </dt>
+        <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0">
+          <span class="bg-gray-200 text-gray-700 rounded-full px-4 py-2">
+            <%= @explain.rejected_plans %>
+          </span>
+        </dd>
+        <dt class="text-sm leading-5 font-medium text-gray-600">
+          Stages Count
+        </dt>
+        <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0">
+          <span class="bg-gray-200 text-gray-700 rounded-full px-4 py-2">
+            <%= @explain.winning_plan_tree.stages_count %>
+          </span>
+        </dd>
+      </div>
+    </dl>
+    <div class="bg-gray-50 px-4 py-5 sm:gap-4 sm:px-6 border-solid border-b-2 border-gray-100">
+      <h4 class="font-semibold text-xl my-4 text-gray-600">Query Plan</h4>
+      <div class="bg-gray-200 pt-4 border rounded border-gray-300">
+        <div id="tree" style="height:400px; width:100%"></div>
+      </div>
+      <div class="text-sm leading-5 font-medium text-gray-600">
+        <h4 class="font-semibold text-xl my-4 text-gray-600">MongoDB Command</h4>
+        <%= @log.command.present? ? raw("<pre><code class=\"language-json\">#{JSON.pretty_generate(JSON.parse(@log.command))}</code></pre>"): 'N/A' %>
+        <h4 class="font-semibold text-xl my-4 text-gray-600">Ruby's Stacktrace</h4>
+        <%= raw("<pre><code class=\"language-ruby\">#{JSON.pretty_generate(JSON.parse(@stacktrace.stacktrace.to_s))}</code></pre>") %>
+      </div>
+    </div>
+  </div>
+  <div class="other_logs">
+    <table class="text-left w-full text-sm border-collapse">
+      <thead class="bg-gray-300">
+        <tr>
+          <th class="px-4 py-2">Duration</th>
+          <th class="px-4 py-2">Documents Returned</th>
+          <th class="px-4 py-2">Documents Examined</th>
+          <th class="px-4 py-2 items-end">Date</th>
+        </tr>
+      </thead>
+      <tbody class="align-baseline">
+        <%= render partial: 'other_log', collection: @other_logs %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  var treeData = JSON.parse('<%= raw @explain.treeviz %>');
+  var myTree = Treeviz.create({
+      htmlId: "tree",
+      idKey: "id",
+      hasFlatData: true,
+      relationnalField: "father",
+      hasPan: true,
+      hasZoom: false,
+      nodeHeight:150,
+      mainAxisNodeSpacing:1.2,
+      secondaryAxisNodeSpacing: 2,
+      isHorizontal:false,
+      renderNode: function(node) {
+      return result = "<div class='text-sm py-2 px-4 text-gray-800 border w-56 border-gray-400 rounded-sm shadow' style='cursor:pointer;height:"+node.settings.nodeHeight+"px;display:flex;flex-direction:column;justify-content:left;align-items:left;background-color:"
+              +node.data.color+
+            ";border-radius:5px;'><div><span class='font-semibold text-base border-b-1 border-gray-200 border-b-2 block'>"
+        +node.data.text_1+
+        "</span></div><div></div><div><i>"
+        +node.data.text_2+
+        "</i></div></div>";
+      },
+      linkWidth : (nodeData)=> 2,
+      linkShape:"curve",
+      linkColor : (nodeData) => "#B0BEC5" ,
+      onNodeClick : (nodeData) => console.log(nodeData)
+  });
+  myTree.refresh(treeData);
+</script>

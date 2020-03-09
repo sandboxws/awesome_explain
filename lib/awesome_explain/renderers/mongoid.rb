@@ -63,7 +63,7 @@ module AwesomeExplain
         used_indexes = []
         plan = winning_plan
         plan_str = stage_label_and_stats(plan)
-        plan_str = dig_input_stages(plan.dig('inputStage'), plan_str, used_indexes) if plan['inputStage']
+        plan_str = dig_input_stages(plan.dig('inputStage'), plan_str, used_indexes) if plan&.dig('inputStage')
 
         [plan_str, used_indexes]
       end
@@ -73,15 +73,15 @@ module AwesomeExplain
       end
 
       def winning_plan
-        root.dig('executionStats', 'executionStages') || root.dig('queryPlanner', 'winningPlan')
+        root.dig('executionStats', 'executionStages') || root.dig('queryPlanner', 'winningPlan') || root['stages'].first['$cursor'].dig('queryPlanner', 'winningPlan') || {}
       end
 
       def rejected_plans
-        root.dig('queryPlanner', 'rejectedPlans')
+        root.dig('queryPlanner', 'rejectedPlans') || root['stages']&.first['$cursor'].dig('queryPlanner', 'rejectedPlans') || {}
       end
 
       def execution_stats
-        root.dig('executionStats')
+        root.dig('executionStats') || root['stages']&.first&.dig('$cursor')&.dig('executionStats') || {}
       end
 
       def dig_input_stages(stage, str, used_indexes, input_stages = false)

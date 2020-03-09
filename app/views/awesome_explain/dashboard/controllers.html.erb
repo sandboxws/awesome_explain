@@ -1,0 +1,22 @@
+<div class="px-4 py-2 border-b border-gray-200 sm:px-6">
+  <h1 class="text-2xl leading-6 font-medium text-gray-900">
+    Controllers
+  </h1>
+</div>
+
+<table class="text-left w-full text-sm border-collapse">
+  <thead class="bg-gray-300">
+    <tr>
+      <th class="px-4 py-2">Controller</th>
+      <th class="px-4 py-2">Action</th>
+      <th class="px-4 py-2">Path</th>
+      <th class="px-4 py-2">Logs</th>
+      <th class="px-4 py-2">Duration</th>
+      <th class="px-4 py-2 items-end">&nbsp;</th>
+    </tr>
+  </thead>
+  <tbody class="align-baseline">
+    <%= render partial: 'controller', collection: @controllers, locals: { full: true } %>
+  </tbody>
+</table>
+<%= paginate @controllers %>

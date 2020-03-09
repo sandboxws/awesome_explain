@@ -15,7 +15,6 @@
   <%= render partial: 'dashboard_stat', locals: { label: 'GetMore', count: @getmore_logs, max_duration: @getmore_max, color: 'pink' } %>
 </div>
 
-<hr class="mt-8 mb-4 border-b-1 border-gray-200" />
 <h2 class="text-xl mb-3 pl-6 text-gray-700">
   Latest Logs
 </h2>
@@ -24,7 +23,7 @@
     <tr>
       <th class="px-4 py-2">Collection</th>
       <th class="px-4 py-2">Operation</th>
-      <th class="px-4 py-2">Selector</th>
+      <th class="px-4 py-2">Command</th>
       <th class="px-4 py-2">Duration</th>
     </tr>
   </thead>
@@ -33,7 +32,23 @@
   </tbody>
 </table>
 
-<hr class="mt-8 mb-4 border-b-1 border-gray-200" />
+<h2 class="text-xl mb-3 pl-6 text-gray-700">
+  Slowest Logs
+</h2>
+<table class="text-left text-sm w-full border-collapse">
+  <thead class="bg-gray-300">
+    <tr>
+      <th class="px-4 py-2">Collection</th>
+      <th class="px-4 py-2">Operation</th>
+      <th class="px-4 py-2">Command</th>
+      <th class="px-4 py-2">Duration</th>
+    </tr>
+  </thead>
+  <tbody class="align-baseline">
+    <%= render partial: "log", collection: @slowest_logs, as: :log, locals: { full: false } %>
+  </tbody>
+</table>
+
 <h2 class="text-xl mb-3 pl-6 text-gray-700">
   Latest Stacktraces
 </h2>
@@ -41,5 +56,15 @@
   <thead class="bg-gray-300">
   <tbody class="align-baseline">
     <%= render partial: "stacktrace", collection: @stacktraces %>
+  </tbody>
+</table>
+
+<h2 class="text-xl mb-3 pl-6 text-gray-700">
+  Slowest Stacktraces
+</h2>
+<table class="text-left text-sm w-full border-collapse">
+  <thead class="bg-gray-300">
+  <tbody class="align-baseline">
+    <%= render partial: "stacktrace", collection: @slowest_stacktraces, as: :stacktrace %>
   </tbody>
 </table>

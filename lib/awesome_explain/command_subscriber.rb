@@ -1,6 +1,17 @@
 module AwesomeExplain
   class CommandSubscriber
-    COMMAND_NAMES_BLACKLIST = ['createIndexes', 'explain', 'saslStart', 'saslContinue', 'listCollections', 'listIndexes']
+    COMMAND_NAMES_BLACKLIST = [
+      'createIndexes',
+      'explain',
+      'saslStart',
+      'saslContinue',
+      'listCollections',
+      'listIndexes',
+      'endSessions',
+      'killCursors',
+      'create',
+      'drop'
+    ]
     QUERIES = [
       :aggregate,
       :count,
@@ -46,29 +57,47 @@ module AwesomeExplain
         @stats[:collections][collection_name][command_name] += 1
         @queries[request_id] = {
           command_name: event.command_name,
-          command: command.select {|k, v| COMMAND_ALLOWED_KEYS.include?(k)},
+          command: command.include?('pipeline') ? command['pipeline'] : command.select {|k, v| COMMAND_ALLOWED_KEYS.include?(k)},
           collection_name: collection_name,
-          stacktrace: caller
+          stacktrace: caller,
+          lsid: command.dig('lsid').dig('id').to_json
         }.with_indifferent_access
 
-        unless DML_COMMANDS.include?(command_name) || Rails.const_defined?('Console')
+        unless DML_COMMANDS.include?(command_name) || Rails.const_defined?('Console') || command_name == :getMore
           begin
-            r = Renderers::Mongoid.new(nil, Mongoid.default_client.database.command({explain: event.command}).documents.first)
+            command = event.command
+            if command.include?('aggregate')
+              command = {
+                'aggregate': command['aggregate'],
+                'pipeline': command['pipeline'],
+                'cursor': command['cursor'],
+              }
+            end
+            r = Renderers::Mongoid.new(nil, Mongoid.default_client.database.command({explain: command}).documents.first)
             exp = Explain.create({
               collection: collection_name,
-              selector: @queries[request_id][:command][:query],
+              command: @queries[request_id][:command].to_json,
               winning_plan: r.winning_plan_data.first,
+              winning_plan_raw: r.winning_plan.to_json,
               used_indexes: r.winning_plan_data.last.join(', '),
-              duration: (r.execution_stats.dig('executionTimeMillis').to_f/1000).round(5),
-              documents_returned: r.execution_stats.dig('nReturned'),
-              documents_examined: r.execution_stats.dig('totalDocsExamined'),
-              keys_examined: r.execution_stats.dig('totalKeysExamined'),
-              rejected_plans: r.rejected_plans.size,
-              stacktrace_id: resolve_stracktrace_id(request_id)
+              duration: (r.execution_stats&.dig('executionTimeMillis').to_f/1000).round(5),
+              documents_returned: r.execution_stats&.dig('nReturned'),
+              documents_examined: r.execution_stats&.dig('totalDocsExamined'),
+              keys_examined: r.execution_stats&.dig('totalKeysExamined'),
+              rejected_plans: r.rejected_plans&.size,
+              session_id: Thread.current[:ae_session_id],
+              lsid: @queries[request_id][:lsid],
+              stacktrace_id: resolve_stracktrace_id(request_id),
+              controller_id: resolve_controller_id
             })
             @queries[request_id][:explain_id] = exp&.id
+            @queries[request_id][:collscan] = exp&.collscan
           rescue => exception
             # TODO: init logger using config
+            puts '*****************'
+            puts exception.inspect
+            puts exception.backtrace[0..5]
+            puts '*****************'
           end
         end
       end
@@ -86,22 +115,27 @@ module AwesomeExplain
           begin
             log = {
               operation: command_name,
+              collscan: @queries[request_id][:collscan],
               collection: @queries[request_id][:collection_name],
               duration: duration,
-              selector: @queries[request_id][:command][:query].to_s,
-              limit: @queries[request_id][:command][:limit],
-              sort: @queries[request_id][:command][:sort],
-              key: @queries[request_id][:command][:key],
+              command: @queries[request_id][:command].to_json,
+              session_id: Thread.current[:ae_session_id],
+              lsid: @queries[request_id][:lsid],
               stacktrace_id: resolve_stracktrace_id(request_id),
-              explain_id: @queries[request_id][:explain_id]
+              explain_id: @queries[request_id][:explain_id],
+              controller_id: resolve_controller_id,
             }
             Log.create(log)
           rescue => exception
             # TODO: init logger using config
+            puts '%%%%%%%%%%%%%%%%'
+            puts exception.inspect
+            puts exception.backtrace[0..5]
+            puts '%%%%%%%%%%%%%%%%'
           end
         end
 
-        puts stats_table unless Rails.const_defined?('Server')
+        # puts stats_table unless Rails.const_defined?('Server')
       end
     end
 
@@ -195,6 +229,21 @@ module AwesomeExplain
       })
 
       stacktrace.id
+    end
+
+    def resolve_controller_id
+      data = controller_data
+      return nil unless data.present?
+      Controller.find_or_create_by({
+        controller: controller_data[:controller],
+        action: controller_data[:action],
+        path: controller_data[:path],
+        params: controller_data[:params].to_json
+      }).id
+    end
+
+    def controller_data
+      Thread.current['ae_controller_data']
     end
   end
 end
