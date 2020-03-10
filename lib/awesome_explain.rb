@@ -1,11 +1,12 @@
-require 'awesome_explain/version'
-require 'awesome_explain/engine'
 require 'awesome_print'
 require 'sqlite3'
 require 'active_record'
 require 'kaminari'
 require 'awesome_print'
 require 'terminal-table'
+require 'awesome_explain/version'
+require 'awesome_explain/config'
+require 'awesome_explain/engine'
 require 'awesome_explain/utils/color'
 require 'awesome_explain/renderers/mongoid'
 require 'awesome_explain/kernel'
@@ -19,17 +20,21 @@ module AwesomeExplain
     AwesomeExplain::Stacktrace.delete_all
     AwesomeExplain::Controller.delete_all
   end
+
+  def self.configure(&block)
+    raise NoBlockGivenException unless block_given?
+
+    Config.configure(&block)
+  end
+
+  class NoBlockGivenException < RuntimeError; end
 end
 
-# Configure SQLite
-# TODO: Move into a config initializer
-
-ActiveRecord::Base.logger = nil
-
+# TODO: Custome rake task to run migrations
 AE_DB_CONFIG = {
   development: {
     adapter: 'sqlite3',
-    database: "#{Rails.root || '.'}/log/awesome_explain.db"
+    database: "#{Rails.root || '.'}/log/ae.db"
   }
 }.with_indifferent_access[Rails.env]
 
@@ -43,7 +48,7 @@ AE_DB_CONFIG = {
 #   end
 
 #   create_table :controllers do |t|
-#     t.column :controller, :string
+#     t.column :name, :string
 #     t.column :action, :string
 #     t.column :path, :string
 #     t.column :params, :string
@@ -52,6 +57,7 @@ AE_DB_CONFIG = {
 
 #   create_table :logs do |t|
 #     t.column :collection, :string
+#     t.column :source_name, :string
 #     t.column :operation, :string
 #     t.column :collscan, :integer
 #     t.column :command, :string
@@ -66,6 +72,7 @@ AE_DB_CONFIG = {
 
 #   create_table :explains do |t|
 #     t.column :collection, :string
+#     t.column :source_name, :string
 #     t.column :command, :string
 #     t.column :collscan, :integer
 #     t.column :winning_plan, :string
@@ -83,8 +90,6 @@ AE_DB_CONFIG = {
 #     t.timestamps
 #   end
 # end
-
-ActiveRecord::Base.establish_connection(AE_DB_CONFIG).connection.exec_query("BEGIN TRANSACTION; END;")
 
 ActiveSupport::Notifications.subscribe 'start_processing.action_controller' do |*args|
   data = args.extract_options!

@@ -19,7 +19,7 @@
           </span>
           <span class="px-2 text-gray-500">/</span>
           <span class="bg-gray-200 text-gray-700 rounded-full px-4 py-2">
-            <%= @explain.used_indexes %>
+            <%= @explain&.used_indexes %>
           </span>
         </dd>
       </div>
@@ -37,7 +37,7 @@
         </dt>
         <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0">
           <span class="bg-gray-200 text-gray-700 rounded-full px-4 py-2">
-            <%= @explain.documents_examined %>
+            <%= @explain&.documents_examined %>
           </span>
         </dd>
       </div>
@@ -47,7 +47,7 @@
         </dt>
         <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0">
           <span class="bg-gray-200 text-gray-700 rounded-full px-4 py-2">
-            <%= @explain.documents_returned %>
+            <%= @explain&.documents_returned %>
           </span>
         </dd>
         <dt class="text-sm leading-5 font-medium text-gray-600">
@@ -55,7 +55,7 @@
         </dt>
         <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0">
           <span class="bg-gray-200 text-gray-700 rounded-full px-4 py-2">
-            <%= @explain.keys_examined %>
+            <%= @explain&.keys_examined %>
           </span>
         </dd>
       </div>
@@ -65,7 +65,7 @@
         </dt>
         <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0">
           <span class="bg-gray-200 text-gray-700 rounded-full px-4 py-2">
-            <%= @explain.rejected_plans %>
+            <%= @explain&.rejected_plans %>
           </span>
         </dd>
         <dt class="text-sm leading-5 font-medium text-gray-600">
@@ -73,16 +73,18 @@
         </dt>
         <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0">
           <span class="bg-gray-200 text-gray-700 rounded-full px-4 py-2">
-            <%= @explain.winning_plan_tree.stages_count %>
+            <%= @explain&.winning_plan_tree&.stages_count %>
           </span>
         </dd>
       </div>
     </dl>
     <div class="bg-gray-50 px-4 py-5 sm:gap-4 sm:px-6 border-solid border-b-2 border-gray-100">
-      <h4 class="font-semibold text-xl my-4 text-gray-600">Query Plan</h4>
-      <div class="bg-gray-200 pt-4 border rounded border-gray-300">
-        <div id="tree" style="height:400px; width:100%"></div>
-      </div>
+      <% if @explain.present? %>
+        <h4 class="font-semibold text-xl my-4 text-gray-600">Query Plan</h4>
+        <div class="bg-gray-200 pt-4 border rounded border-gray-300">
+          <div id="tree" style="height:400px; width:100%"></div>
+        </div>
+      <% end %>
       <div class="text-sm leading-5 font-medium text-gray-600">
         <h4 class="font-semibold text-xl my-4 text-gray-600">MongoDB Command</h4>
         <%= @log.command.present? ? raw("<pre><code class=\"language-json\">#{JSON.pretty_generate(JSON.parse(@log.command))}</code></pre>"): 'N/A' %>
@@ -108,6 +110,7 @@
   </div>
 </div>
 
+<% if @explain.present? %>
 <script>
   var treeData = JSON.parse('<%= raw @explain.treeviz %>');
   var myTree = Treeviz.create({
@@ -137,3 +140,4 @@
   });
   myTree.refresh(treeData);
 </script>
+<% end %>

@@ -37,10 +37,12 @@ module AwesomeExplain
       'query'
     ] + (QUERIES.map {|q| q.to_s})).freeze
 
+    attr_reader :logger
     attr_accessor :options, :queries, :stats
 
     def initialize(options = {})
       init(options)
+      @logger = Config.instance.logger
     end
 
     def started(event)
@@ -76,6 +78,7 @@ module AwesomeExplain
             r = Renderers::Mongoid.new(nil, Mongoid.default_client.database.command({explain: command}).documents.first)
             exp = Explain.create({
               collection: collection_name,
+              source_name: Config.instance.source_name,
               command: @queries[request_id][:command].to_json,
               winning_plan: r.winning_plan_data.first,
               winning_plan_raw: r.winning_plan.to_json,
@@ -93,11 +96,8 @@ module AwesomeExplain
             @queries[request_id][:explain_id] = exp&.id
             @queries[request_id][:collscan] = exp&.collscan
           rescue => exception
-            # TODO: init logger using config
-            puts '*****************'
-            puts exception.inspect
-            puts exception.backtrace[0..5]
-            puts '*****************'
+            logger.warn exception.to_s
+            logger.warn exception.backtrace[0..5]
           end
         end
       end
@@ -115,6 +115,7 @@ module AwesomeExplain
           begin
             log = {
               operation: command_name,
+              source_name: Config.instance.source_name,
               collscan: @queries[request_id][:collscan],
               collection: @queries[request_id][:collection_name],
               duration: duration,
@@ -127,11 +128,8 @@ module AwesomeExplain
             }
             Log.create(log)
           rescue => exception
-            # TODO: init logger using config
-            puts '%%%%%%%%%%%%%%%%'
-            puts exception.inspect
-            puts exception.backtrace[0..5]
-            puts '%%%%%%%%%%%%%%%%'
+            logger.warn exception.to_s
+            logger.warn exception.backtrace[0..5]
           end
         end
 
@@ -142,6 +140,7 @@ module AwesomeExplain
     def failed(event)
     end
 
+    # TODO: Move to a renderer
     def stats_table
       table = Terminal::Table.new(title: 'Query Stats') do |t|
         t << [
@@ -235,7 +234,7 @@ module AwesomeExplain
       data = controller_data
       return nil unless data.present?
       Controller.find_or_create_by({
-        controller: controller_data[:controller],
+        name: controller_data[:controller],
         action: controller_data[:action],
         path: controller_data[:path],
         params: controller_data[:params].to_json

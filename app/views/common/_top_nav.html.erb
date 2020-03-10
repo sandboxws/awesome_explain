@@ -16,10 +16,10 @@
         </div>
         <div class="hidden sm:block sm:ml-6">
           <div class="flex">
-            <a href="/awesome_explain" class="px-3 py-2 rounded-md text-sm font-medium leading-5 text-white bg-gray-900 focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out">Dashboard</a>
-            <a href="/awesome_explain/logs" class="ml-4 px-3 py-2 rounded-md text-sm font-medium leading-5 text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out">Logs</a>
-            <a href="/awesome_explain/controllers" class="ml-4 px-3 py-2 rounded-md text-sm font-medium leading-5 text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out">Controllers</a>
-            <a href="/awesome_explain/stacktraces" class="ml-4 px-3 py-2 rounded-md text-sm font-medium leading-5 text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out">Stacktraces</a>
+            <a href="/awesome_explain" class="px-3 py-2 rounded-md text-sm font-medium leading-5 text-white <%= current_page?(action: 'index') ? 'bg-gray-900' : '' %> focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out">Dashboard</a>
+            <a href="/awesome_explain/logs" class="ml-4 px-3 py-2 rounded-md text-sm font-medium leading-5 text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out <%= current_page?(action: 'logs') ? 'bg-gray-900' : '' %>">Logs</a>
+            <a href="/awesome_explain/controllers" class="ml-4 px-3 py-2 rounded-md text-sm font-medium leading-5 text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out <%= current_page?(action: 'controllers') ? 'bg-gray-900' : '' %>">Controllers</a>
+            <a href="/awesome_explain/stacktraces" class="ml-4 px-3 py-2 rounded-md text-sm font-medium leading-5 text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:text-white focus:bg-gray-700 transition duration-150 ease-in-out <%= current_page?(action: 'stacktraces') ? 'bg-gray-900' : '' %>">Stacktraces</a>
           </div>
         </div>
       </div>

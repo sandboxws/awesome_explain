@@ -102,8 +102,8 @@ module AwesomeExplain
     def controllers
       @controllers = Controller
         .joins(:logs)
-        .select('controllers.id, controllers.controller, controllers.action, controllers.path, count(logs.id) as logs_count')
-        .group('controllers.id, controllers.controller, controllers.action, controllers.path')
+        .select('controllers.id, controllers.name, controllers.action, controllers.path, count(logs.id) as logs_count')
+        .group('controllers.id, controllers.name, controllers.action, controllers.path')
         .order('count(logs.id) desc, controllers.id desc')
         .page(params[:page])
         @controllers_count = @controllers.total_count
