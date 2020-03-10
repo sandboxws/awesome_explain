@@ -31,23 +31,23 @@ module AwesomeExplain
         end
       end
 
-      ::ActiveRecord::Base.establish_connection(
-        active_record_config
-      ).connection.exec_query("BEGIN TRANSACTION; END;")
+      # ::ActiveRecord::Base.establish_connection(
+      #   active_record_config
+      # ).connection.exec_query("BEGIN TRANSACTION; END;")
     end
 
     def active_record_config
       ActiveRecord::Base.logger = nil
       {
-        development: {
+        ae_development: {
           adapter: 'sqlite3',
           database: "#{db_path}/#{db_name}"
         },
-        staging: {
+        ae_staging: {
           adapter: 'sqlite3',
           database: "#{db_path}/#{db_name}"
         }
-      }.with_indifferent_access[Rails.env]
+      }.with_indifferent_access["ae_#{Rails.env}"]
     end
 
     #
