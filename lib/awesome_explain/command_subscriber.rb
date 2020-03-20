@@ -237,7 +237,8 @@ module AwesomeExplain
         name: controller_data[:controller],
         action: controller_data[:action],
         path: controller_data[:path],
-        params: controller_data[:params].to_json
+        params: controller_data[:params].to_json,
+        session_id: Thread.current['ae_session_id']
       }).id
     end
 

@@ -52,6 +52,7 @@ AE_DB_CONFIG = {
 #     t.column :action, :string
 #     t.column :path, :string
 #     t.column :params, :string
+#     t.column :session_id, :string
 #     t.timestamps
 #   end
 
@@ -99,9 +100,10 @@ ActiveSupport::Notifications.subscribe 'start_processing.action_controller' do |
   Thread.current[:ae_session_id] = SecureRandom.uuid
 end
 
-# ActiveSupport::Notifications.subscribe 'process_action.action_controller' do |*args|
-#   data = args.extract_options!
-#   puts 'process_action.action_controller'
-#   puts data.inspect
-#   puts Thread.current[:ae_controller_id]
-# end
+ActiveSupport::Notifications.subscribe 'process_action.action_controller' do |*args|
+  # data = args.extract_options!
+  # puts 'process_action.action_controller'
+  # puts data.inspect
+  # puts Thread.current[:ae_controller_id]
+  Thread.current[:ae_session_id] = nil
+end
