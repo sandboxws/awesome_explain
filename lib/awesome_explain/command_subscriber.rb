@@ -1,6 +1,17 @@
 module AwesomeExplain
   class CommandSubscriber
-    COMMAND_NAMES_BLACKLIST = ['createIndexes', 'explain', 'saslStart', 'saslContinue', 'listCollections', 'listIndexes']
+    COMMAND_NAMES_BLACKLIST = [
+      'createIndexes',
+      'explain',
+      'saslStart',
+      'saslContinue',
+      'listCollections',
+      'listIndexes',
+      'endSessions',
+      'killCursors',
+      'create',
+      'drop'
+    ]
     QUERIES = [
       :count,
       :distinct,
