@@ -92,18 +92,14 @@ AE_DB_CONFIG = {
 #   end
 # end
 
-ActiveSupport::Notifications.subscribe 'start_processing.action_controller' do |*args|
-  data = args.extract_options!
-  unless data[:controller] =~ /AwesomeExplain/ || data[:controller] =~ /ErrorsController/ || data[:path] =~ /awesome_explain/
-    Thread.current[:ae_controller_data] = data
-  end
-  Thread.current[:ae_session_id] = SecureRandom.uuid
-end
+# ActiveSupport::Notifications.subscribe 'start_processing.action_controller' do |*args|
+#   data = args.extract_options!
+#   unless data[:controller] =~ /AwesomeExplain/ || data[:controller] =~ /ErrorsController/ || data[:path] =~ /awesome_explain/
+#     Thread.current[:ae_controller_data] = data
+#   end
+#   Thread.current[:ae_session_id] = SecureRandom.uuid
+# end
 
-ActiveSupport::Notifications.subscribe 'process_action.action_controller' do |*args|
-  # data = args.extract_options!
-  # puts 'process_action.action_controller'
-  # puts data.inspect
-  # puts Thread.current[:ae_controller_id]
-  Thread.current[:ae_session_id] = nil
-end
+# ActiveSupport::Notifications.subscribe 'process_action.action_controller' do |*args|
+#   Thread.current[:ae_session_id] = nil
+# end
