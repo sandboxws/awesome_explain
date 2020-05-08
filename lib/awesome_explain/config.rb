@@ -25,9 +25,14 @@ module AwesomeExplain
     def init
       return unless enabled
       unless Rails.env.production?
-        if !Mongo::Monitoring::Global.subscribers['Command'].collect(&:class).include?(CommandSubscriber)
+        command_subscribers = Mongo::Monitoring::Global.subscribers.dig('Command')
+        if command_subscribers.nil? || !command_subscribers.collect(&:class).include?(CommandSubscriber)
           command_subscriber = CommandSubscriber.new
-          Mongo::Monitoring::Global.subscribe(Mongo::Monitoring::COMMAND, command_subscriber)
+          begin
+            Mongoid.default_client.subscribe(Mongo::Monitoring::COMMAND, command_subscriber)
+          rescue => exception
+            Mongo::Monitoring::Global.subscribe(Mongo::Monitoring::COMMAND, command_subscriber)
+          end
         end
       end
 
