@@ -11,6 +11,7 @@ require 'awesome_explain/utils/color'
 require 'awesome_explain/renderers/mongoid'
 require 'awesome_explain/kernel'
 require 'awesome_explain/command_subscriber'
+require 'awesome_explain/sidekiq_middleware'
 require 'awesome_explain/insights'
 
 module AwesomeExplain
@@ -34,18 +35,31 @@ end
 AE_DB_CONFIG = {
   development: {
     adapter: 'sqlite3',
-    database: "#{Rails.root || '.'}/log/ae.db"
+    database: "#{Rails.root || '.'}/log/ae.db",
+    pool: 50,
+    timeout: 5000,
   }
 }.with_indifferent_access[Rails.env]
 
 # TODO: Custome rake task to run migrations
-ActiveRecord::Base.establish_connection AE_DB_CONFIG
+ActiveRecord::Base.establish_connection(AE_DB_CONFIG)
+
 connection = ActiveRecord::Base.establish_connection(AE_DB_CONFIG).connection
 
 ActiveRecord::Schema.define do
   unless connection.table_exists?(:stacktraces)
     create_table :stacktraces do |t|
       t.column :stacktrace, :string
+      t.timestamps
+    end
+  end
+
+  unless connection.table_exists?(:sidekiq_workers)
+    create_table :sidekiq_workers do |t|
+      t.column :worker, :string
+      t.column :queue, :string
+      t.column :jid, :string
+      t.column :params, :string
       t.timestamps
     end
   end
@@ -71,9 +85,12 @@ ActiveRecord::Schema.define do
       t.column :duration, :double
       t.column :session_id, :string
       t.column :lsid, :string
+
+      t.column :sidekiq_args, :string
       t.column :stacktrace_id, :integer
       t.column :explain_id, :integer
       t.column :controller_id, :integer
+      t.column :sidekiq_worker_id, :integer
       t.timestamps
     end
   end

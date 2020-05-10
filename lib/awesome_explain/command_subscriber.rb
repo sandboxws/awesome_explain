@@ -91,7 +91,7 @@ module AwesomeExplain
               session_id: Thread.current[:ae_session_id],
               lsid: @queries[request_id][:lsid],
               stacktrace_id: resolve_stracktrace_id(request_id),
-              controller_id: resolve_controller_id
+              controller_id: resolve_controller_id,
             })
             @queries[request_id][:explain_id] = exp&.id
             @queries[request_id][:collscan] = exp&.collscan
@@ -125,6 +125,7 @@ module AwesomeExplain
               stacktrace_id: resolve_stracktrace_id(request_id),
               explain_id: @queries[request_id][:explain_id],
               controller_id: resolve_controller_id,
+              sidekiq_worker_id: resolve_sidekiq_class_id,
             }
             Log.create(log)
           rescue => exception
@@ -132,8 +133,6 @@ module AwesomeExplain
             logger.warn exception.backtrace[0..5]
           end
         end
-
-        # puts stats_table unless Rails.const_defined?('Server')
       end
     end
 
@@ -242,8 +241,26 @@ module AwesomeExplain
       }).id
     end
 
+    def resolve_sidekiq_class_id
+      return unless Thread.current[:sidekiq_worker_class].present?
+      sidekiq_worker_class_str = Thread.current[:sidekiq_worker_class]
+      sidekiq_queue_str = Thread.current[:sidekiq_queue].to_s
+      sidekiq_worker = SidekiqWorker.find_or_create_by({
+        worker: sidekiq_worker_class_str,
+        queue: sidekiq_queue_str,
+        jid: extract_sidekiq_jid(Thread.current[:sidekiq_job]),
+        params: Thread.current[:sidekiq_job].present? ? Thread.current[:sidekiq_job].to_json : {}
+      })
+
+      sidekiq_worker.id
+    end
+
     def controller_data
       Thread.current['ae_controller_data']
+    end
+
+    def extract_sidekiq_jid(args)
+      Thread.current[:sidekiq_job].dig('jid')
     end
   end
 end
