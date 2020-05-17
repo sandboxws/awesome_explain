@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rails', '>= 5.0'
   spec.add_dependency 'kaminari', '>= 1.0'
 
-  spec.add_development_dependency 'bundler', '>= 1.16'
+  spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'puma'
   spec.add_development_dependency 'binding_of_caller'
   spec.add_development_dependency 'pry-byebug'
