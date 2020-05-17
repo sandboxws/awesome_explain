@@ -1,5 +1,6 @@
 module AwesomeExplain
   class CommandSubscriber
+    DEFAULT_SOURCE_NAME = 'server'
     COMMAND_NAMES_BLACKLIST = [
       'createIndexes',
       'explain',
@@ -65,7 +66,7 @@ module AwesomeExplain
           lsid: command.dig('lsid').dig('id').to_json
         }.with_indifferent_access
 
-        unless DML_COMMANDS.include?(command_name) || Rails.const_defined?('Console') || command_name == :getMore
+        if db_explain_enabled?(command_name)
           begin
             command = event.command
             if command.include?('aggregate')
@@ -78,7 +79,7 @@ module AwesomeExplain
             r = Renderers::Mongoid.new(nil, Mongoid.default_client.database.command({explain: command}).documents.first)
             exp = Explain.create({
               collection: collection_name,
-              source_name: Config.instance.source_name,
+              source_name: Config.instance.app_name,
               command: @queries[request_id][:command].to_json,
               winning_plan: r.winning_plan_data.first,
               winning_plan_raw: r.winning_plan.to_json,
@@ -111,11 +112,12 @@ module AwesomeExplain
         @stats[:performed_queries][command_name] += 1
         @stats[:total_duration] += duration
         @queries[request_id][:duration] = duration
-        unless Rails.const_defined?('Console')
+        if db_logging_enbled?
           begin
             log = {
               operation: command_name,
-              source_name: Config.instance.source_name,
+              app_name: Config.instance.app_name,
+              source_name: resolve_source_name,
               collscan: @queries[request_id][:collscan],
               collection: @queries[request_id][:collection_name],
               duration: duration,
@@ -261,6 +263,24 @@ module AwesomeExplain
 
     def extract_sidekiq_jid(args)
       Thread.current[:sidekiq_job].dig('jid')
+    end
+
+    def resolve_source_name
+      Thread.current['ae_source'] || DEFAULT_SOURCE_NAME
+    end
+
+    def db_explain_enabled?(command_name)
+      return false if DML_COMMANDS.include?(command_name)
+      return false if command_name == :getMore
+      return true if Thread.current['ae_analyze']
+      return false if Rails.const_defined?('Console')
+      true
+    end
+
+    def db_logging_enbled?
+      return true if Thread.current['ae_analyze']
+      return false if Rails.const_defined?('Console')
+      true
     end
   end
 end

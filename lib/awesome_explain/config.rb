@@ -6,7 +6,7 @@ module AwesomeExplain
       :enabled,
       :include_full_plan,
       :max_limit,
-      :source_name,
+      :app_name,
       :logger
 
     DEFAULT_DB_NAME = :awesome_explain
@@ -35,10 +35,6 @@ module AwesomeExplain
           end
         end
       end
-
-      # ::ActiveRecord::Base.establish_connection(
-      #   active_record_config
-      # ).connection.exec_query("BEGIN TRANSACTION; END;")
     end
 
     def active_record_config
@@ -89,8 +85,8 @@ module AwesomeExplain
       @max_limit = value
     end
 
-    def source_name=(value = :rails)
-      @source_name = value
+    def app_name=(value = :rails)
+      @app_name = value
     end
 
     def logger=(value = nil)

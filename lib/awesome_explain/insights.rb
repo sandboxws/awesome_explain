@@ -12,11 +12,13 @@ module AwesomeExplain
     end
 
     def init
-      command_subscribers = Mongo::Monitoring::Global.subscribers['Command']
+      command_subscribers = Mongoid.default_client.send(:monitoring).subscribers['Command'] || Mongo::Monitoring::Global.subscribers['Command']
       @command_subscriber = command_subscribers.select do |s|
         s.class == AwesomeExplain::CommandSubscriber
       end.first
       @command_subscriber.clear
+      Thread.current['ae_analyze'] = true
+      Thread.current['ae_source'] = 'console'
     end
 
     def tear_down
@@ -38,6 +40,7 @@ module AwesomeExplain
         @command_subscriber.stats_table
         @command_subscriber.clear
       end
+      Thread.current['ae_analyze'] = false
     end
   end
 end

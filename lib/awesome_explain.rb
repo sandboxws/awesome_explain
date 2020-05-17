@@ -78,6 +78,7 @@ ActiveRecord::Schema.define do
   unless connection.table_exists?(:logs)
     create_table :logs do |t|
       t.column :collection, :string
+      t.column :app_name, :string
       t.column :source_name, :string
       t.column :operation, :string
       t.column :collscan, :integer
@@ -112,6 +113,21 @@ ActiveRecord::Schema.define do
       t.column :session_id, :string
       t.column :lsid, :string
       t.column :stacktrace_id, :integer
+      t.column :controller_id, :integer
+      t.timestamps
+    end
+  end
+
+  unless connection.table_exists?(:transactions)
+    create_table :transactions do |t|
+      t.column :params, :string
+      t.column :format, :string
+      t.column :method, :string
+      t.column :ip, :string
+      t.column :stash, :string
+      t.column :status, :string
+      t.column :view_runtime, :string
+
       t.column :controller_id, :integer
       t.timestamps
     end
