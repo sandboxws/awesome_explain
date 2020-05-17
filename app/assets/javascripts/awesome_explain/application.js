@@ -1,9 +1,0 @@
-//= require awesome_explain/prism.min
-//= require awesome_explain/prism-json.min
-//= require awesome_explain/prism-ruby.min
-//= require awesome_explain/clipboard.min
-//= require awesome_explain/prism-toolbar.min
-//= require awesome_explain/prism-copy-to-clipboard.min
-//= require awesome_explain/treeviz
-//= require awesome_explain/application
-//= require_tree
