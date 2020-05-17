@@ -4,7 +4,7 @@ PATH
     awesome_explain (0.3.0)
       awesome_print (~> 1.0)
       kaminari (>= 1.0)
-      rails (>= 5.0)
+      rails (>= 5.1, <= 6.1)
       sqlite3 (~> 1.4.2)
       terminal-table (~> 1.0)
 
