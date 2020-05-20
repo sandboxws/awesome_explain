@@ -12,6 +12,8 @@ module AwesomeExplain
     DEFAULT_DB_NAME = :awesome_explain
     DEFAULT_DB_PATH = './log'
 
+    alias :enabled? :enabled
+
     def self.configure(&block)
       raise NoBlockGivenException unless block_given?
 
