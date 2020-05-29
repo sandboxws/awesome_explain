@@ -15,7 +15,7 @@ namespace :ae do
 
   desc 'Create database tables'
   task build: :environment do
-    ActiveRecord::Base.establish_connection AE_DB_CONFIG
+    ActiveRecord::Base.establish_connection AwesomeExplain::Config.instance.db_config
     ActiveRecord::Schema.define do
       create_table :stacktraces do |t|
         t.column :stacktrace, :string

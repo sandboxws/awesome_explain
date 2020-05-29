@@ -1,5 +1,5 @@
 class AwesomeExplain::Log < ActiveRecord::Base
-  establish_connection AE_DB_CONFIG
+  establish_connection AwesomeExplain::Config.instance.db_config
   self.table_name = 'logs'
 
   belongs_to :stacktrace

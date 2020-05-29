@@ -26,6 +26,7 @@ module AwesomeExplain
 
     def init
       return unless enabled
+      create_tables
       unless Rails.env.production?
         command_subscribers = Mongo::Monitoring::Global.subscribers.dig('Command')
         if command_subscribers.nil? || !command_subscribers.collect(&:class).include?(CommandSubscriber)
@@ -34,6 +35,113 @@ module AwesomeExplain
             Mongoid.default_client.subscribe(Mongo::Monitoring::COMMAND, command_subscriber)
           rescue => exception
             Mongo::Monitoring::Global.subscribe(Mongo::Monitoring::COMMAND, command_subscriber)
+          end
+        end
+      end
+    end
+
+    def db_config
+      {
+        development: {
+          adapter: 'sqlite3',
+          database: "#{db_path || '.'}/log/ae.db",
+          pool: 50,
+          timeout: 5000,
+        }
+      }.with_indifferent_access[Rails.env]
+    end
+
+    def create_tables
+      if enabled
+        ActiveRecord::Base.establish_connection(db_config)
+
+        connection = ActiveRecord::Base.establish_connection(db_config).connection
+
+        ActiveRecord::Schema.define do
+          unless connection.table_exists?(:stacktraces)
+            create_table :stacktraces do |t|
+              t.column :stacktrace, :string
+              t.timestamps
+            end
+          end
+
+          unless connection.table_exists?(:sidekiq_workers)
+            create_table :sidekiq_workers do |t|
+              t.column :worker, :string
+              t.column :queue, :string
+              t.column :jid, :string
+              t.column :params, :string
+              t.timestamps
+            end
+          end
+
+          unless connection.table_exists?(:controllers)
+            create_table :controllers do |t|
+              t.column :name, :string
+              t.column :action, :string
+              t.column :path, :string
+              t.column :params, :string
+              t.column :session_id, :string
+              t.timestamps
+            end
+          end
+
+          unless connection.table_exists?(:logs)
+            create_table :logs do |t|
+              t.column :collection, :string
+              t.column :app_name, :string
+              t.column :source_name, :string
+              t.column :operation, :string
+              t.column :collscan, :integer
+              t.column :command, :string
+              t.column :duration, :double
+              t.column :session_id, :string
+              t.column :lsid, :string
+
+              t.column :sidekiq_args, :string
+              t.column :stacktrace_id, :integer
+              t.column :explain_id, :integer
+              t.column :controller_id, :integer
+              t.column :sidekiq_worker_id, :integer
+              t.timestamps
+            end
+          end
+
+          unless connection.table_exists?(:explains)
+            create_table :explains do |t|
+              t.column :collection, :string
+              t.column :source_name, :string
+              t.column :command, :string
+              t.column :collscan, :integer
+              t.column :winning_plan, :string
+              t.column :winning_plan_raw, :string
+              t.column :used_indexes, :string
+              t.column :duration, :double
+              t.column :documents_returned, :integer
+              t.column :documents_examined, :integer
+              t.column :keys_examined, :integer
+              t.column :rejected_plans, :integer
+              t.column :session_id, :string
+              t.column :lsid, :string
+              t.column :stacktrace_id, :integer
+              t.column :controller_id, :integer
+              t.timestamps
+            end
+          end
+
+          unless connection.table_exists?(:transactions)
+            create_table :transactions do |t|
+              t.column :params, :string
+              t.column :format, :string
+              t.column :method, :string
+              t.column :ip, :string
+              t.column :stash, :string
+              t.column :status, :string
+              t.column :view_runtime, :string
+
+              t.column :controller_id, :integer
+              t.timestamps
+            end
           end
         end
       end
