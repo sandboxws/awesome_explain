@@ -44,7 +44,7 @@ module AwesomeExplain
       {
         development: {
           adapter: 'sqlite3',
-          database: "#{db_path || '.'}/log/ae.db",
+          database: "#{db_path || './log'}/ae.db",
           pool: 50,
           timeout: 5000,
         }
