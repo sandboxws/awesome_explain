@@ -14,6 +14,8 @@ require 'awesome_explain/command_subscriber'
 require 'awesome_explain/sidekiq_middleware'
 require 'awesome_explain/insights'
 
+DEFAULT_SOURCE_NAME = 'server'
+
 module AwesomeExplain
   def self.clean
     AwesomeExplain::Log.delete_all

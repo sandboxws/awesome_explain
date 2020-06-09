@@ -3,7 +3,9 @@ module AwesomeExplain
     include Singleton
     attr_reader :db_name,
       :db_path,
+      :rails_path,
       :enabled,
+      :active_record_enabled,
       :include_full_plan,
       :max_limit,
       :app_name,
@@ -13,6 +15,7 @@ module AwesomeExplain
     DEFAULT_DB_PATH = './log'
 
     alias :enabled? :enabled
+    alias :active_record_enabled? :active_record_enabled
 
     def self.configure(&block)
       raise NoBlockGivenException unless block_given?
@@ -26,124 +29,40 @@ module AwesomeExplain
 
     def init
       return unless enabled
-      create_tables
       unless Rails.env.production?
-        command_subscribers = Mongo::Monitoring::Global.subscribers.dig('Command')
-        if command_subscribers.nil? || !command_subscribers.collect(&:class).include?(CommandSubscriber)
-          command_subscriber = CommandSubscriber.new
-          begin
-            Mongoid.default_client.subscribe(Mongo::Monitoring::COMMAND, command_subscriber)
-          rescue => exception
-            Mongo::Monitoring::Global.subscribe(Mongo::Monitoring::COMMAND, command_subscriber)
+        if Rails.const_defined?('Mongo') && Rails.const_defined?('Mongoid')
+          command_subscribers = Mongo::Monitoring::Global.subscribers.dig('Command')
+          if command_subscribers.nil? || !command_subscribers.collect(&:class).include?(CommandSubscriber)
+            command_subscriber = CommandSubscriber.new
+            begin
+              Mongoid.default_client.subscribe(Mongo::Monitoring::COMMAND, command_subscriber)
+            rescue => exception
+              Mongo::Monitoring::Global.subscribe(Mongo::Monitoring::COMMAND, command_subscriber)
+            end
           end
+        end
+
+        if active_record_enabled
+          puts 'Attaching to ActiveRecord'
+          ::AwesomeExplain::ActiveRecordSubscriber.attach_to :active_record
         end
       end
     end
 
     def db_config
       {
-        development: {
+        ae_development: {
           adapter: 'sqlite3',
           database: "#{db_path || './log'}/ae.db",
           pool: 50,
           timeout: 5000,
         }
-      }.with_indifferent_access[Rails.env]
+      }.with_indifferent_access["ae_#{Rails.env}"]
     end
 
     def create_tables
       if enabled
-        ActiveRecord::Base.establish_connection(db_config)
-
         connection = ActiveRecord::Base.establish_connection(db_config).connection
-
-        ActiveRecord::Schema.define do
-          unless connection.table_exists?(:stacktraces)
-            create_table :stacktraces do |t|
-              t.column :stacktrace, :string
-              t.timestamps
-            end
-          end
-
-          unless connection.table_exists?(:sidekiq_workers)
-            create_table :sidekiq_workers do |t|
-              t.column :worker, :string
-              t.column :queue, :string
-              t.column :jid, :string
-              t.column :params, :string
-              t.timestamps
-            end
-          end
-
-          unless connection.table_exists?(:controllers)
-            create_table :controllers do |t|
-              t.column :name, :string
-              t.column :action, :string
-              t.column :path, :string
-              t.column :params, :string
-              t.column :session_id, :string
-              t.timestamps
-            end
-          end
-
-          unless connection.table_exists?(:logs)
-            create_table :logs do |t|
-              t.column :collection, :string
-              t.column :app_name, :string
-              t.column :source_name, :string
-              t.column :operation, :string
-              t.column :collscan, :integer
-              t.column :command, :string
-              t.column :duration, :double
-              t.column :session_id, :string
-              t.column :lsid, :string
-
-              t.column :sidekiq_args, :string
-              t.column :stacktrace_id, :integer
-              t.column :explain_id, :integer
-              t.column :controller_id, :integer
-              t.column :sidekiq_worker_id, :integer
-              t.timestamps
-            end
-          end
-
-          unless connection.table_exists?(:explains)
-            create_table :explains do |t|
-              t.column :collection, :string
-              t.column :source_name, :string
-              t.column :command, :string
-              t.column :collscan, :integer
-              t.column :winning_plan, :string
-              t.column :winning_plan_raw, :string
-              t.column :used_indexes, :string
-              t.column :duration, :double
-              t.column :documents_returned, :integer
-              t.column :documents_examined, :integer
-              t.column :keys_examined, :integer
-              t.column :rejected_plans, :integer
-              t.column :session_id, :string
-              t.column :lsid, :string
-              t.column :stacktrace_id, :integer
-              t.column :controller_id, :integer
-              t.timestamps
-            end
-          end
-
-          unless connection.table_exists?(:transactions)
-            create_table :transactions do |t|
-              t.column :params, :string
-              t.column :format, :string
-              t.column :method, :string
-              t.column :ip, :string
-              t.column :stash, :string
-              t.column :status, :string
-              t.column :view_runtime, :string
-
-              t.column :controller_id, :integer
-              t.timestamps
-            end
-          end
-        end
       end
     end
 
@@ -161,13 +80,6 @@ module AwesomeExplain
       }.with_indifferent_access["ae_#{Rails.env}"]
     end
 
-    #
-    # Name of the sqlite db file
-    #
-    # @param [String] value sqlite db filename
-    #
-    # @return [String] current value
-    #
     def db_name=(value = DEFAULT_DB_NAME)
       @db_name = "#{value.to_s}.db"
     end
@@ -176,15 +88,16 @@ module AwesomeExplain
       @db_path = value
     end
 
-    #
-    # Enable/Disable awesome explain
-    #
-    # @param [Boolean] value true or false
-    #
-    # @return [Boolean] current value
-    #
+    def rails_path=(value)
+      @rails_path = value
+    end
+
     def enabled=(value = false)
       @enabled = value
+    end
+
+    def active_record_enabled=(value = false)
+      @active_record_enabled = value
     end
 
     def include_full_plan=(value = false)
