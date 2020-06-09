@@ -4,6 +4,10 @@ module Kernel
     query
   end
 
+  def analyze(&block)
+    AwesomeExplain::Insights.analyze(&block)
+  end
+
   private
 
   def mongoid_query?(query)
