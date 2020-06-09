@@ -63,7 +63,7 @@ module AwesomeExplain
           command: command.include?('pipeline') ? command['pipeline'] : command.select {|k, v| COMMAND_ALLOWED_KEYS.include?(k)},
           collection_name: collection_name,
           stacktrace: caller,
-          lsid: command.dig('lsid').dig('id').to_json
+          lsid: command.dig('lsid', 'id').to_json
         }.with_indifferent_access
 
         if db_explain_enabled?(command_name)
