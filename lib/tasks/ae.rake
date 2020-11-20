@@ -15,6 +15,7 @@ namespace :ae do
 
   desc 'Create database tables'
   task build: :environment do
+    ActiveRecord::Base.establish_connection AwesomeExplain::Config.instance.db_config
     case AwesomeExplain::Config.instance.adaptor
     when :postgres
       Rake::Task["ae:build_postgres"].invoke
@@ -23,7 +24,6 @@ namespace :ae do
     else
       raise "Must pass a supported adaptor name to AwesomeExplain.configure block in lib/awesome_explain.rb"
     end
-    ActiveRecord::Base.establish_connection AwesomeExplain::Config.instance.db_config
   end
 
   task build_sqlite: :environment do
