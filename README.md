@@ -110,3 +110,51 @@ The gem is available as open source under the terms of the [MIT License](http://
 ## Code of Conduct
 
 Everyone interacting in the AwesomeExplain project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/sandboxws/awesome_explain/blob/master/CODE_OF_CONDUCT.md).
+
+# Setup using Postgres
+Using awesome explain with postgres allows you to handle more concurrent db connections.  
+
+## Guide
+Install postgres
+```
+brew install postgres
+```   
+
+Add awesome explain db config
+```
+# config/ae.yml
+development:
+  adapter: postgresql
+  encoding: utf8
+  host: localhost
+  pool: 10
+  database: ae_development
+  username: postgres
+  password:
+```
+
+Set adaptor to `:postgres` in the awesome explain initializer
+```
+# config/initializers/awesome_explain.rb
+AwesomeExplain.configure do |config|
+	...
+  config.adaptor = :postgres
+end
+```
+
+Create 'postgres' user
+
+```
+/usr/local/opt/postgres/bin/createuser -s postgres
+```
+
+Create db
+```
+bundle exec rake ae:db:create
+```
+
+Create tables 
+
+```
+bundle exec rake ae:build
+```
