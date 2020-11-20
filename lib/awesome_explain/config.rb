@@ -9,7 +9,8 @@ module AwesomeExplain
       :include_full_plan,
       :max_limit,
       :app_name,
-      :logger
+      :logger,
+      :adaptor
 
     DEFAULT_DB_NAME = :awesome_explain
     DEFAULT_DB_PATH = './log'
@@ -50,6 +51,31 @@ module AwesomeExplain
     end
 
     def db_config
+      case adaptor
+      when :postgres
+        postgres_config
+      when :sqlite
+        sqlite_config
+      else
+        raise "Unsupported adaptor"
+      end
+    end
+
+    def postgres_config
+      {
+        ae_development: {
+          adapter: 'postgresql',
+          encoding: 'utf8',
+          host: 'localhost',
+          database: "ae_#{Rails.env}",
+          username: 'postgres',
+          pool: 50,
+          timeout: 5000,
+        }
+      }.with_indifferent_access["ae_#{Rails.env}"]
+    end
+
+    def sqlite_config
       {
         ae_development: {
           adapter: 'sqlite3',
@@ -114,6 +140,10 @@ module AwesomeExplain
 
     def logger=(value = nil)
       @logger = value.nil? ? Logger.new(STDOUT) : value
+    end
+
+    def adaptor=(value = :sqlite)
+      @adaptor = value
     end
   end
 end
