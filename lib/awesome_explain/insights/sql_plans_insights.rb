@@ -3,6 +3,7 @@ module AwesomeExplain::Insights
     include Singleton
 
     attr_accessor :plans_stats, :queries
+    attr_reader :mutex
 
     def initialize
       @plans_stats = []
