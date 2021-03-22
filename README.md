@@ -1,11 +1,9 @@
 # AwesomeExplain
 
 Awesome explain is a simple global method that provides quick insights into mongodb's query plan and execution stats.
-Currently the explain functionality only supports `Mongo::Collection::View::Aggregation` & ``Mongoid::Criteria`.
+Currently the explain functionality only supports `Mongo::Collection::View::Aggregation` & `Mongoid::Criteria`.
 
-[![Build Status](https://travis-ci.com/sandboxws/awesome_explain.svg?branch=master)](https://travis-ci.com/sandboxws/awesome_explain)
-[![Maintainability](https://api.codeclimate.com/v1/badges/75e1a5cb4b6a5c1ba4c8/maintainability)](https://codeclimate.com/github/sandboxws/awesome_explain/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/75e1a5cb4b6a5c1ba4c8/test_coverage)](https://codeclimate.com/github/sandboxws/awesome_explain/test_coverage)
+![Build Status](https://github.com/sandboxws/awesome_explain/actions/workflows/ruby.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <a href="https://www.universe.com/" target="_blank" rel="noopener noreferrer">

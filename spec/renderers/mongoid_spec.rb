@@ -89,7 +89,11 @@ RSpec.describe AwesomeExplain::Renderers::Mongoid do
     let(:used_indexes) { winning_plan_data.last }
 
     it 'returns SORT (4553) -> SORT_KEY_GENERATOR (4553) -> FETCH (4553 / 4553) -> IXSCAN (4553) as the winning plan' do
-      expect(winning_plan_str).to eq 'SORT (4553) -> SORT_KEY_GENERATOR (4553) -> FETCH (4553 / 4553) -> IXSCAN (4553)'
+      if Mongoid.default_client.command(buildInfo: 1).first[:version].to_f >= 4.4
+        expect(winning_plan_str).to eq 'SORT (4553) -> FETCH (4553 / 4553) -> IXSCAN (4553)'
+      else
+        expect(winning_plan_str).to eq 'SORT (4553) -> SORT_KEY_GENERATOR (4553) -> FETCH (4553 / 4553) -> IXSCAN (4553)'
+      end
     end
 
     it 'returns blank array for Used Indexes' do
