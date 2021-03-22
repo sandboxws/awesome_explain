@@ -1,0 +1,52 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will download a prebuilt Ruby version, install dependencies and run tests with Rake
+# For more information see: https://github.com/marketplace/actions/setup-ruby-jruby-and-truffleruby
+
+name: Awesome Explain
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: "*"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['2.5']
+        mongodb-version: ['3.4', '3.6', '4.0', '4.2', '4.4']
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v2
+
+    - name: Install dependent libraries
+      run: sudo apt-get install libpq-dev
+
+    - name: Start MongoDB v${{ matrix.mongodb-version }}
+      uses: supercharge/mongodb-github-action@1.3.0
+      with:
+        mongodb-version: ${{ matrix.mongodb-version }}
+
+    - name: Set up Ruby
+    # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
+    # change this to (see https://github.com/ruby/setup-ruby#versioning):
+    # uses: ruby/setup-ruby@v1
+      uses: ruby/setup-ruby@473e4d8fe5dd94ee328fdfca9f8c9c7afc9dae5e
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+    - name: Restore MongoDB Data
+      run: |
+        mongorestore -d awesome_explain_test ./data/mongodb/customers.bson
+        mongorestore -d awesome_explain_test ./data/mongodb/line_items.bson
+        mongorestore -d awesome_explain_test ./data/mongodb/orders.bson
+        mongorestore -d awesome_explain_test ./data/mongodb/products.bson
+    - name: Run tests
+      run: bundle exec rspec
