@@ -1,10 +1,11 @@
 module AwesomeExplain::Insights
   class ActiveRecordInsights
-    attr_accessor :active_record_subscriber
+    attr_accessor :options, :active_record_subscriber
 
-    def self.analyze(&block)
+    def self.analyze(options, &block)
       instance = new
       instance.init
+      instance.options = options
       block_result = instance.instance_eval(&block)
       instance.tear_down
       block_result
@@ -26,11 +27,15 @@ module AwesomeExplain::Insights
       Thread.current['ae_source'] = 'console'
     end
 
+    def print_sql?
+      options.dig(:print) == true
+    end
+
     def tear_down
       if SqlPlansInsights.plans_stats.size.positive?
         SqlPlansInsights.queries.each do |query|
           puts query
-        end
+        end if print_sql?
 
         table = Terminal::Table.new do |t|
           t << ['Time (sec)', total_time]
@@ -92,7 +97,7 @@ module AwesomeExplain::Insights
       stats.inject(Hash.new(0)) do |h, s|
         h[s.keys.first] += s[s.keys.first].dig(:count)
         h
-      end&.map {|s| "#{s.first} (#{s.last})"}&.join(' | ')
+      end&.map {|s| "#{s.first} (#{s.last})"}&.join("\n")
     end
 
     def node_types
@@ -101,7 +106,7 @@ module AwesomeExplain::Insights
       end.inject(Hash.new(0)) do |h, s|
         h[s.keys.first] += s[s.keys.first].dig(:count)
         h
-      end&.map {|s| "#{s.first} (#{s.last})"}&.join(' | ')
+      end&.map {|s| "#{s.first} (#{s.last})"}&.join("\n")
     end
 
     def indexes
@@ -112,7 +117,7 @@ module AwesomeExplain::Insights
       stats.inject(Hash.new(0)) do |h, s|
         h[s.keys.first] += s[s.keys.first].dig(:count)
         h
-      end&.map {|s| "#{s.first} (#{s.last})"}&.join(' | ')
+      end&.map {|s| "#{s.first} (#{s.last})"}&.join("\n")
     end
 
     def total_loops_row

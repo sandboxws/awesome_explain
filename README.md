@@ -6,10 +6,6 @@ Currently the explain functionality only supports `Mongo::Collection::View::Aggr
 ![Build Status](https://github.com/sandboxws/awesome_explain/actions/workflows/ruby.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<a href="https://www.universe.com/" target="_blank" rel="noopener noreferrer">
-  <img src="images/universe.png" height="41" width="153" alt="Sponsored by Universe" style="max-width:100%;">
-</a>
-
 ## Installation
 
 Add the following line to your application's Gemfile:

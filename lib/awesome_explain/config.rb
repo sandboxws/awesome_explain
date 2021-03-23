@@ -100,6 +100,16 @@ module AwesomeExplain
           password: postgres_password || POSTGRES_DEFAULT_PASSWORD,
           pool: 5,
           timeout: 5000,
+        },
+        ae_staging: {
+          adapter: 'postgresql',
+          encoding: 'utf8',
+          host: postgres_host || POSTGRES_DEFAULT_HOST,
+          database: POSTGRES_DEV_DBNAME,
+          username: postgres_username || POSTGRES_DEFAULT_USERNAME,
+          password: postgres_password || POSTGRES_DEFAULT_PASSWORD,
+          pool: 5,
+          timeout: 5000,
         }
       }.with_indifferent_access["ae_#{Rails.env}"]
     end

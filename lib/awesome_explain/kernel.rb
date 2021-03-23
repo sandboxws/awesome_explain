@@ -10,10 +10,10 @@ module Kernel
     ::AwesomeExplain::MongoiddInsights.analyze(&block)
   end
 
-  def analyze_ar(&block)
+  def analyze_ar(options = {}, &block)
     Thread.current['ae_analyze'] = true
     Thread.current['ae_source'] = 'console'
-    ::AwesomeExplain::Insights::ActiveRecordInsights.analyze(&block)
+    ::AwesomeExplain::Insights::ActiveRecordInsights.analyze(options, &block)
   end
 
   private
