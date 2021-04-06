@@ -3,9 +3,9 @@ module AwesomeExplain
     class Mongoid
       attr_reader :result, :query
 
-      def initialize(query)
+      def initialize(query, result = nil)
         @query = query
-        @result = query.explain
+        @result = result || query.explain
       end
 
       def print
@@ -55,11 +55,15 @@ module AwesomeExplain
         table
       end
 
+      def parsed_query
+        root.dig('parsedQuery')
+      end
+
       def winning_plan_data
         used_indexes = []
         plan = winning_plan
         plan_str = stage_label_and_stats(plan)
-        plan_str = dig_input_stages(plan.dig('inputStage'), plan_str, used_indexes) if plan['inputStage']
+        plan_str = dig_input_stages(plan.dig('inputStage'), plan_str, used_indexes) if plan&.dig('inputStage')
 
         [plan_str, used_indexes]
       end
@@ -69,15 +73,15 @@ module AwesomeExplain
       end
 
       def winning_plan
-        root.dig('executionStats', 'executionStages') || root.dig('queryPlanner', 'winningPlan')
+        root.dig('executionStats', 'executionStages') || root.dig('queryPlanner', 'winningPlan') || root['stages'].first['$cursor'].dig('queryPlanner', 'winningPlan') || {}
       end
 
       def rejected_plans
-        root.dig('queryPlanner', 'rejectedPlans')
+        root.dig('queryPlanner', 'rejectedPlans') || root['stages']&.first['$cursor'].dig('queryPlanner', 'rejectedPlans') || {}
       end
 
       def execution_stats
-        root.dig('executionStats')
+        root.dig('executionStats') || root['stages']&.first&.dig('$cursor')&.dig('executionStats') || {}
       end
 
       def dig_input_stages(stage, str, used_indexes, input_stages = false)
@@ -105,6 +109,7 @@ module AwesomeExplain
       end
 
       def stage_label_and_stats(stage)
+        return unless stage.present?
         str = "#{stage.dig('stage')} ("
         str += "#{stage.dig('docsExamined')} / " if stage.dig('docsExamined').present?
         str += stage.dig('nReturned').to_s if stage.dig('nReturned').present?
