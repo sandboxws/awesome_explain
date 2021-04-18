@@ -78,7 +78,7 @@ module AwesomeExplain
         connection = ::ActiveRecord::Base.connection_handler.connection_pools.first.last.connection
       else
         connection = ::ActiveRecord::Base.connection_handler.connection_pools.select do |cp|
-          cp.connection.object_id == connection_id
+          !cp.connection.current_database.match(/awesome_explain/)
         end.first.connection
       end
 
