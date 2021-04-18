@@ -1,0 +1,56 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will download a prebuilt Ruby version, install dependencies and run tests with Rake
+# For more information see: https://github.com/marketplace/actions/setup-ruby-jruby-and-truffleruby
+
+name: AwesomeExplain - PostgreSQL
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: "*"
+
+jobs:
+  test-postgres:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version: ['2.5']
+        postgres-version: ['10', '11', '12', '13']
+    steps:
+    - name: Git checkout
+      uses: actions/checkout@v2
+
+    - name: Install dependent libraries
+      run: sudo apt-get install libpq-dev
+
+    - name: Start PostgreSQL v${{ matrix.postgres-version }}
+      uses: harmon758/postgresql-action@v1
+      with:
+        postgresql version: ${{ matrix.postgres-version }}  # See https://hub.docker.com/_/postgres for available versions
+        postgresql db: dvdrental
+        postgresql user: postgres
+        postgresql password: postgres
+
+    - name: Set up Ruby
+    # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
+    # change this to (see https://github.com/ruby/setup-ruby#versioning):
+    # uses: ruby/setup-ruby@v1
+      uses: ruby/setup-ruby@473e4d8fe5dd94ee328fdfca9f8c9c7afc9dae5e
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+
+    - name: Restore PostgrsSQL Data
+      run: |
+        touch ~/.pgpass
+        echo localhost:5432:dvdrental:postgres:postgres > ~/.pgpass
+        chmod 600 ~/.pgpass
+        pg_restore -U postgres -w -h localhost -p 5432 -d dvdrental data/postgresql/dvdrental.tar
+
+    - name: Run tests
+      run: bundle exec rspec spec/sql

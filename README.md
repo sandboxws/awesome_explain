@@ -1,7 +1,8 @@
 # AwesomeExplain
 
-Awesome explain is a simple global method that provides quick insights into mongodb's query plan and execution stats.
-Currently the explain functionality only supports `Mongo::Collection::View::Aggregation` & `Mongoid::Criteria`.
+AwesomeExplain provies a set of utilities for analyzing MongoDB and SQL queries from Rails console.
+AwesomeExplain also allows tracking queries under your database of choice (SQLite3 or PostgreSQL)
+which can be viewed under [Athena's](https://github.com/sandboxws/athena_dashboard) dashboard.
 
 ![Build Status](https://github.com/sandboxws/awesome_explain/actions/workflows/ruby.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -12,7 +13,9 @@ Add the following line to your application's Gemfile:
 
 `gem 'awesome_explain', require: true`
 
-## Usage
+## MongoDB
+
+### Usage
 
 `ae Article.where(author_id: '5b9ec484d5cc2e697189d7c9')`
 
@@ -81,7 +84,7 @@ Add the following line to your application's Gemfile:
 +--------------------+----------------+
 ```
 
-## Winning Plan Examples
+### Winning Plan Examples
 
 `FETCH (7 / 7) -> IXSCAN (7)`
 
@@ -92,6 +95,12 @@ Below is a breakdown of the above winning plan:
 
 For information about MongoDB's explain output, please refer to the official MongoDB Explain documentation:
 https://docs.mongodb.com/manual/reference/explain-results/
+
+## PostgreSQL
+
+### Usage
+
+TODO
 
 ## Contributing
 

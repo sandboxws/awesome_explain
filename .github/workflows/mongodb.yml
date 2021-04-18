@@ -5,16 +5,16 @@
 # This workflow will download a prebuilt Ruby version, install dependencies and run tests with Rake
 # For more information see: https://github.com/marketplace/actions/setup-ruby-jruby-and-truffleruby
 
-name: Awesome Explain
+name: AwesomeExplain - MongoDB
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
     branches: "*"
 
 jobs:
-  test:
+  test-mongodb:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -48,5 +48,6 @@ jobs:
         mongorestore -d awesome_explain_test ./data/mongodb/line_items.bson
         mongorestore -d awesome_explain_test ./data/mongodb/orders.bson
         mongorestore -d awesome_explain_test ./data/mongodb/products.bson
+
     - name: Run tests
-      run: bundle exec rspec
+      run: bundle exec rspec spec/mongodb
