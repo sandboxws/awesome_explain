@@ -1,10 +1,15 @@
 # AwesomeExplain
 
-AwesomeExplain provies a set of utilities for analyzing MongoDB and SQL queries from Rails console.
-AwesomeExplain also allows tracking queries under your database of choice (SQLite3 or PostgreSQL)
+AwesomeExplain provides the same APM's level of query analysis under your development and test Rails environments.
+
+## Main Features
+
+* A set of utilities for analyzing MongoDB and SQL queries from Rails console.
+* Tracking queries under your database of choice (SQLite3 or PostgreSQL)
 which can be viewed under [Athena's](https://github.com/sandboxws/athena_dashboard) dashboard.
 
-![Build Status](https://github.com/sandboxws/awesome_explain/actions/workflows/ruby.yml/badge.svg)
+![Build Status](https://github.com/sandboxws/awesome_explain/actions/workflows/mongodb.yml/badge.svg)
+![Build Status](https://github.com/sandboxws/awesome_explain/actions/workflows/postgres.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Installation
@@ -12,6 +17,18 @@ which can be viewed under [Athena's](https://github.com/sandboxws/athena_dashboa
 Add the following line to your application's Gemfile:
 
 `gem 'awesome_explain', require: true`
+
+## Console Utility Methods
+
+* **ae**: Prints a query's execution plan using a user friendly terminal table
+  * Currently supports the following classes:
+    * `Mongo::Collection::View::Aggregation`
+    * `Mongoid::Criteria`
+    * `ActiveRecord::Relation`
+* **analyze**: Prints a summary of all MongoDB queries passed to the Ruby block
+* **analyze_ar**: Prints a summary of all ActiveRecord queries passed to the Ruby block
+
+*Detailed usage examples can be found below.*
 
 ## MongoDB
 
@@ -98,9 +115,99 @@ https://docs.mongodb.com/manual/reference/explain-results/
 
 ## PostgreSQL
 
-### Usage
+### ae Usage
 
-TODO
+#### Query using PK index
+
+`ae Film.where(film_id: 1)`
+
+```
++--------------------+-------+
+|       General Stats        |
++--------------------+-------+
+| Table              | Count |
++--------------------+-------+
+| Total Rows Planned | 1     |
+| Total Rows         | 1     |
+| Total Loops        | 1     |
+| Seq Scans          | 0     |
+| Indexes Used       | 1     |
++--------------------+-------+
+|        Table Stats         |
++--------------------+-------+
+| Table              | Count |
++--------------------+-------+
+| film               | 1     |
++--------------------+-------+
+|      Node Type Stats       |
++--------------------+-------+
+| Node Type          | Count |
++--------------------+-------+
+| Index Scan         | 1     |
++--------------------+-------+
+|        Index Stats         |
++--------------------+-------+
+| Index Name         | Count |
++--------------------+-------+
+| film_pkey          | 1     |
++--------------------+-------+
+```
+
+#### Query not using any index
+
+`ae Film.where(description: 'Alien Center')`
+
+```
++--------------------+-------+
+|       General Stats        |
++--------------------+-------+
+| Table              | Count |
++--------------------+-------+
+| Total Rows Planned | 1     |
+| Total Rows         | 0     |
+| Total Loops        | 1     |
+| Seq Scans          | 1     |
+| Indexes Used       | 0     |
++--------------------+-------+
+|        Table Stats         |
++--------------------+-------+
+| Table              | Count |
++--------------------+-------+
+| film               | 1     |
++--------------------+-------+
+|      Node Type Stats       |
++--------------------+-------+
+| Node Type          | Count |
++--------------------+-------+
+| Seq Scan           | 1     |
++--------------------+-------+
+```
+
+### analyze_ar Usage
+
+`analyze_ar { Film.where(film_id: 1).to_a; Actor.where(last_name: 'Cage').to_a };0`
+
+```
++--------------------+----------------+
+| Time (sec)         | 0.0            |
++--------------------+----------------+
+| Total Rows Planned | 3              |
++--------------------+----------------+
+| Total Rows         | 3              |
++--------------------+----------------+
+| Total Loops        | 2              |
++--------------------+----------------+
+| Seq Scans          | 1              |
++--------------------+----------------+
+| Tables             | film (1)       |
+|                    | actor (1)      |
++--------------------+----------------+
+| Node Types         | Index Scan (1) |
+|                    | Seq Scan (1)   |
++--------------------+----------------+
+| Indexes            | film_pkey (1)  |
++--------------------+----------------+
+```
 
 ## Contributing
 
