@@ -121,7 +121,7 @@ GEM
       nokogiri (~> 1)
       rake
     mini_mime (1.1.0)
-    mini_portile2 (2.5.0)
+    mini_portile2 (2.5.1)
     minitest (5.14.4)
     mongo (2.14.0)
       bson (>= 4.8.2, < 5.0.0)
@@ -130,7 +130,7 @@ GEM
       mongo (>= 2.10.5, < 3.0.0)
     niceql (0.1.25)
     nio4r (2.5.7)
-    nokogiri (1.11.3)
+    nokogiri (1.11.5)
       mini_portile2 (~> 2.5.0)
       racc (~> 1.4)
     pg (1.2.3)
