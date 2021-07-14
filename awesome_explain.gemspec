@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'awesome_print', '~> 1.0'
   spec.add_dependency 'terminal-table', '~> 1.0'
   spec.add_dependency 'sqlite3'
-  spec.add_dependency 'rails', '>= 4.2', '<= 6.1'
+  spec.add_dependency 'rails', '>= 4.2'
   spec.add_dependency 'kaminari', '>= 1.0'
   spec.add_dependency 'activerecord-import', '>= 0.25'
   spec.add_dependency 'niceql'
