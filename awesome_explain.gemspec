@@ -10,8 +10,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Ahmed El.Hussaini']
   spec.email         = ['aelhussaini@gmail.com']
 
-  spec.summary       = 'Awesome and simple approach to explain Mongoid queries'
-  spec.description   = 'An awesome and simple approach to explain Mongoid queries that provides winning plan stages and overall statistics'
+  spec.summary       = 'Awesome and simple approach to explain Mongoid & ActiveRecord queries'
+  spec.description   = 'AwesomeExplain provides the same APM level of query analysis under your development and test Rails environments.'
   spec.homepage      = 'https://github.com/sandboxws/awesome_explain'
   spec.license       = 'MIT'
 
