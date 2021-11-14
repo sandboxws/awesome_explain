@@ -1,6 +1,4 @@
-# -*- encoding: utf-8 -*-
-
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'awesome_explain/version'
 
@@ -20,24 +18,23 @@ Gem::Specification.new do |spec|
   end
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'awesome_print', '~> 1.0'
-  spec.add_dependency 'terminal-table', '~> 1.0'
-  spec.add_dependency 'sqlite3'
-  spec.add_dependency 'rails', '>= 4.2'
-  spec.add_dependency 'kaminari', '>= 1.0'
   spec.add_dependency 'activerecord-import', '>= 0.25'
+  spec.add_dependency 'awesome_print', '~> 1.0'
+  spec.add_dependency 'kaminari', '>= 1.0'
   spec.add_dependency 'niceql'
   spec.add_dependency 'pg'
+  spec.add_dependency 'rails', '>= 4.2'
+  spec.add_dependency 'terminal-table', '~> 1.0'
 
-  spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'appraisal'
-  spec.add_development_dependency 'wwtd'
   spec.add_development_dependency 'binding_of_caller'
+  spec.add_development_dependency 'bundler'
+  spec.add_development_dependency 'mongoid', '>= 5'
   spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'pry-rails'
-  spec.add_development_dependency 'mongoid', '>= 5'
   spec.add_development_dependency 'rake', '>= 10.0'
   spec.add_development_dependency 'rspec', '>= 3.10'
   spec.add_development_dependency 'simplecov', '>= 0.21.2'
   spec.add_development_dependency 'simplecov-console', '>= 0.9.1'
+  spec.add_development_dependency 'wwtd'
 end
