@@ -1,5 +1,4 @@
 require 'awesome_print'
-require 'sqlite3'
 require 'active_record'
 require 'kaminari'
 require 'awesome_print'
@@ -25,44 +24,42 @@ require 'awesome_explain/kernel'
 
 DEFAULT_SOURCE_NAME = :server
 
-COMMAND_NAMES_BLACKLIST = [
-  'createIndexes',
-  'explain',
-  'saslStart',
-  'saslContinue',
-  'listCollections',
-  'listIndexes',
-  'endSessions',
-  'killCursors',
-  'create',
-  'drop'
+COMMAND_NAMES_BLACKLIST = %w[
+  createIndexes
+  explain
+  saslStart
+  saslContinue
+  listCollections
+  listIndexes
+  endSessions
+  killCursors
+  create
+  drop
 ]
-QUERIES = [
-  :aggregate,
-  :count,
-  :delete,
-  :distinct,
-  :find,
-  :getMore,
-  :insert,
-  :update
+QUERIES = %i[
+  aggregate
+  count
+  delete
+  distinct
+  find
+  getMore
+  insert
+  update
 ].freeze
 
-DML_COMMANDS = [
-  :insert,
-  :update,
-  :delete
+DML_COMMANDS = %i[
+  insert
+  update
+  delete
 ].freeze
 
-COMMAND_ALLOWED_KEYS = ([
-  'filter',
-  'sort',
-  'limit',
-  'key',
-  'query'
-] + (QUERIES.map {|q| q.to_s})).freeze
-
-require 'thread'
+COMMAND_ALLOWED_KEYS = (%w[
+  filter
+  sort
+  limit
+  key
+  query
+] + (QUERIES.map { |q| q.to_s })).freeze
 
 module AwesomeExplain
   def self.clean
