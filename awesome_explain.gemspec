@@ -27,7 +27,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'kaminari', '>= 1.0'
   spec.add_dependency 'activerecord-import', '>= 0.25'
   spec.add_dependency 'niceql'
-  spec.add_dependency 'pg'
+  # spec.add_dependency 'pg'
+  spec.add_dependency 'mysql2', '~> 0.5.5'
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'appraisal'

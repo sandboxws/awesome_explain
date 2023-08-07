@@ -9,7 +9,7 @@ require 'niceql'
 require 'awesome_explain/version'
 require 'awesome_explain/utils/color'
 
-require 'awesome_explain/mongodb/base'
+# require 'awesome_explain/mongodb/base'
 require 'awesome_explain/renderers/base'
 require 'awesome_explain/subscribers/base'
 require 'awesome_explain/insights/base'
@@ -20,7 +20,7 @@ require 'awesome_explain/engine'
 require 'awesome_explain/queue/simple_queue'
 require 'awesome_explain/queue/command'
 require 'awesome_explain/sidekiq_middleware'
-require 'awesome_explain/stats/postgresql'
+# require 'awesome_explain/stats/postgresql'
 require 'awesome_explain/kernel'
 
 DEFAULT_SOURCE_NAME = :server
