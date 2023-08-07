@@ -8,6 +8,7 @@ require 'niceql'
 
 require 'awesome_explain/version'
 require 'awesome_explain/utils/color'
+require 'awesome_explain/tasks/db'
 
 # require 'awesome_explain/mongodb/base'
 require 'awesome_explain/renderers/base'
