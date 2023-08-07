@@ -1,5 +1,3 @@
-require 'pg'
-
 module AwesomeExplain
   module Tasks
     class DB
@@ -13,6 +11,8 @@ module AwesomeExplain
       end
 
       def self.drop_postgres_db
+        require 'pg'
+
         conn = PG.connect(
           dbname: 'postgres',
           host: postgres_host,
@@ -24,6 +24,8 @@ module AwesomeExplain
       end
 
       def self.build_postgres_db
+        require 'pg'
+
         conn = PG.connect(
           dbname: 'postgres',
           host: postgres_host,
